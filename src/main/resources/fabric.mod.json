@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "anatidaephobia",
+	"version": "${version}",
+	"name": "Anatidaephobia",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/anatidaephobia/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.studer.alex.anatidaephobia.Anatidaephobia"
+		],
+		"client": [
+			"dev.studer.alex.anatidaephobia.AnatidaephobiaClient"
+		]
+	},
+	"mixins": [
+		"anatidaephobia.mixins.json",
+		{
+			"config": "anatidaephobia.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.2",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
