@@ -43,6 +43,12 @@ public class DuckEntity extends PathfinderMob {
 	}
 
 	@Override
+	public boolean canBeLeashed() {
+		// TODO: it would be funny if this worked?
+		return false;
+	}
+
+	@Override
 	public void handleEntityEvent(final byte id) {
 		if (id == EVENT_ID_LOVE) {
 			for(int i = 0; i < 7; ++i) {
