@@ -1,5 +1,6 @@
 package dev.studer.alex.anatidaephobia;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -25,6 +26,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.HashMap;
 
 public class DuckEntity extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
@@ -60,6 +63,12 @@ public class DuckEntity extends PathfinderMob {
 		} else {
 			super.handleEntityEvent(id);
 		}
+	}
+
+	@Override
+	public void remove(RemovalReason reason) {
+		DuckNestManager.unclaimNest(this);
+		super.remove(reason);
 	}
 
 	@Override
@@ -135,10 +144,69 @@ public class DuckEntity extends PathfinderMob {
 	}
 
 	public class NestGoal extends MoveToBlockGoal {
+		private static final int NEST_DURATION = 2 * Anatidaephobia.TICKS_PER_SECOND;
+
 		private final DuckEntity duck;
+		private boolean nesting = false;
+		private int nestingTicks = 0;
+
 		public NestGoal(DuckEntity duck, double speedModifier, int searchRange) {
 			super(duck, speedModifier, searchRange);
 			this.duck = duck;
+		}
+
+		@Override
+		public void start() {
+			super.start();
+
+			LogUtils.getLogger().info("[{}] starting", duck.getUUID());
+			DuckNestManager.claimNest(duck, this.blockPos);
+		}
+
+		@Override
+		public void stop() {
+			super.stop();
+
+			LogUtils.getLogger().info("[{}] stopping", duck.getUUID());
+			DuckNestManager.unclaimNest(duck);
+		}
+
+		@Override
+		public void tick() {
+			super.tick();
+
+			if (this.isReachedTarget() && !nesting) {
+				LogUtils.getLogger().info("[{}] reached goal", duck.getUUID());
+				nesting = true;
+			}
+
+			if (nesting) {
+				nestingTicks++;
+				if (nestingTicks > NEST_DURATION) {
+					// we did it
+					// TODO: lay an egg or something?
+					nesting = false;
+					blockPos = BlockPos.ZERO;
+				}
+			}
+		}
+
+		@Override
+		public boolean canContinueToUse() {
+			if (super.canContinueToUse()) {
+				return true;
+			}
+
+			if (blockPos != BlockPos.ZERO && isValidTarget(this.mob.level(), blockPos)) {
+				// if we have somewhere to go, keep trying to go there (so we hold onto the nest claim)
+				return true;
+			}
+
+			if (nesting && isValidTarget(this.mob.level(), blockPos)) {
+				return true;
+			}
+
+			return false;
 		}
 
 		@Override
@@ -147,17 +215,26 @@ public class DuckEntity extends PathfinderMob {
 			return reducedTickDelay(40);
 		}
 
-		@Override
-		public double acceptedDistance() {
-			// Ensure ducks go right on the hay
-			return 0.001;
-		}
+//		@Override
+//		public double acceptedDistance() {
+//			// Ensure ducks go right on the hay
+//			return 0.001;
+//		}
 
 		@Override
 		protected boolean isValidTarget(LevelReader level, BlockPos pos) {
 			// Only nest on hay bales with air above
-			return level.getBlockState(pos).is(Blocks.HAY_BLOCK) &&
+			boolean isHay = level.getBlockState(pos).is(Blocks.HAY_BLOCK) &&
 					level.getBlockState(pos.above()).isAir();
+			if (!isHay) {
+				return false;
+			}
+
+			if (!DuckNestManager.isNestFree(pos, duck.getUUID())) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
