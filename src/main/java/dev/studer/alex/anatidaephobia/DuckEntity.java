@@ -32,7 +32,8 @@ public class DuckEntity extends PathfinderMob {
 	public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float f) {
 		boolean result = super.hurtServer(serverLevel, damageSource, f);
 
-		if (result) {
+		// If we're dying then we already would have triggered the behavior in die() so skip this code
+		if (result && !isDeadOrDying()) {
 			if (damageSource.getEntity() != null) {
 				if (damageSource.getEntity() instanceof ServerPlayer) {
 					ServerPlayer player = (ServerPlayer) damageSource.getEntity();
@@ -46,12 +47,23 @@ public class DuckEntity extends PathfinderMob {
 					serverLevel.addFreshEntity(bolt);
 					player.thunderHit(serverLevel, bolt);
 
-					player.sendSystemMessage(Component.translatable("biome.minecraft.basalt_deltas"));
+					player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
 				}
 			}
 		}
 
 		return result;
+	}
+
+	@Override
+	public void die(DamageSource damageSource) {
+		if (damageSource.getEntity() instanceof ServerPlayer) {
+			ServerPlayer player = (ServerPlayer) damageSource.getEntity();
+
+			player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_death"));
+		}
+
+		super.die(damageSource);
 	}
 
 	public static AttributeSupplier.Builder createMobAttributes() {
