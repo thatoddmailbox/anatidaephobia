@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
@@ -14,6 +15,8 @@ import java.util.function.Function;
 
 public class AnatidaephobiaItems {
 	public static final Item DUCK_SPAWN_EGG = register("duck_spawn_egg", SpawnEggItem::new, new Item.Properties().spawnEgg(AnatidaephobiaEntities.DUCK));
+
+	public static final TagKey<Item> DUCK_FOOD = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_food"));
 
 	public static Item register(String name, Function<Item.Properties, Item> itemFactory, Item.Properties settings) {
 		// Create the item key.
