@@ -62,6 +62,9 @@ public class DuckEntity extends PathfinderMob {
 		if (damageSource.getEntity() instanceof ServerPlayer) {
 			ServerPlayer player = (ServerPlayer) damageSource.getEntity();
 
+			// TODO: lightning storm?
+			player.level().setWeatherParameters(0, 10*Anatidaephobia.TICKS_PER_SECOND, true, true);
+
 			player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_death"));
 		}
 
