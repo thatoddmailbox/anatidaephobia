@@ -146,10 +146,12 @@ public class DuckEntity extends PathfinderMob {
 
 	public class NestGoal extends MoveToBlockGoal {
 		private static final int NEST_DURATION = 2 * Anatidaephobia.TICKS_PER_SECOND;
+		private static final int NEST_TIMEOUT = 2 * Anatidaephobia.TICKS_PER_SECOND;
 
 		private final DuckEntity duck;
 		private boolean nesting = false;
 		private int nestingTicks = 0;
+		private int nestingTimeoutTicks = 0;
 
 		public NestGoal(DuckEntity duck, double speedModifier, int searchRange) {
 			super(duck, speedModifier, searchRange);
@@ -168,6 +170,10 @@ public class DuckEntity extends PathfinderMob {
 		public void stop() {
 			super.stop();
 
+			nesting = false;
+			nestingTicks = 0;
+			nestingTimeoutTicks = 0;
+
 			LogUtils.getLogger().info("[{}] stopping", duck.getUUID());
 			DuckNestManager.unclaimNest(duck);
 		}
@@ -185,6 +191,7 @@ public class DuckEntity extends PathfinderMob {
 			if (nesting) {
 				nestingTicks++;
 				if (nestingTicks > NEST_DURATION) {
+					LogUtils.getLogger().info("[{}] nested", duck.getUUID());
 					// we did it
 
 					// TODO: should lay a special golden duck egg or something?
@@ -194,9 +201,30 @@ public class DuckEntity extends PathfinderMob {
 					this.duck.gameEvent(GameEvent.ENTITY_PLACE);
 
 					nesting = false;
+					nestingTicks = 0;
+					nestingTimeoutTicks = 0;
+
+					// Move away from nest
+					double angle = this.duck.getRandom().nextDouble() * 2 * Math.PI;
+					double distance = 3.0 + this.duck.getRandom().nextDouble() * 3.0;
+					double targetX = Math.round(blockPos.getX() + Math.cos(angle) * distance);
+					double targetZ = Math.round(blockPos.getZ() + Math.sin(angle) * distance);
+					LogUtils.getLogger().info("[{}] go to {} {} {}", duck.getUUID(), targetX, blockPos.getY(), targetZ);
+					this.duck.getNavigation().moveTo(targetX, blockPos.getY(), targetZ, this.speedModifier);
+
 					blockPos = BlockPos.ZERO;
 				}
 			}
+		}
+
+		@Override
+		public boolean canUse() {
+			if (nestingTimeoutTicks < NEST_TIMEOUT) {
+				nestingTimeoutTicks++;
+				return false;
+			}
+
+			return super.canUse();
 		}
 
 		@Override
