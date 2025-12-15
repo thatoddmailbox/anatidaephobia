@@ -20,5 +20,7 @@ public class Anatidaephobia implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		AnatidaephobiaEntities.init();
 	}
 }

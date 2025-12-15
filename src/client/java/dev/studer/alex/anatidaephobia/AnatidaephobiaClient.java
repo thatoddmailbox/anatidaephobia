@@ -1,10 +1,19 @@
 package dev.studer.alex.anatidaephobia;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 
 public class AnatidaephobiaClient implements ClientModInitializer {
+	public static final ModelLayerLocation MODEL_DUCK_LAYER = new ModelLayerLocation(AnatidaephobiaEntities.DUCK_ID, "main");
+
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+
+		EntityRenderers.register(AnatidaephobiaEntities.DUCK, DuckEntityRenderer::new);
+
+		EntityModelLayerRegistry.registerModelLayer(MODEL_DUCK_LAYER, DuckEntityModel::getTexturedModelData);
 	}
 }
