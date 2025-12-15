@@ -1,5 +1,6 @@
 package dev.studer.alex.anatidaephobia;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +15,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.animal.Animal;
@@ -22,6 +23,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
 
 public class DuckEntity extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
@@ -34,7 +37,8 @@ public class DuckEntity extends PathfinderMob {
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD), false));
-		this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 1.0));
+		this.goalSelector.addGoal(2, new NestGoal(this, 1.0, 16));
+		this.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(this, 1.0));
 //		this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 6.0F));
 	}
 
@@ -122,5 +126,26 @@ public class DuckEntity extends PathfinderMob {
 				.add(Attributes.ATTACK_DAMAGE, 2.0)
 				.add(Attributes.SAFE_FALL_DISTANCE, 5.0)
 				.add(Attributes.FOLLOW_RANGE, 32.0);
+	}
+
+	public class NestGoal extends MoveToBlockGoal {
+		private final DuckEntity duck;
+		public NestGoal(DuckEntity duck, double speedModifier, int searchRange) {
+			super(duck, speedModifier, searchRange);
+			this.duck = duck;
+		}
+
+		@Override
+		protected int nextStartTick(PathfinderMob pathfinderMob) {
+			// TODO: fix me
+			return reducedTickDelay(40);
+		}
+
+		@Override
+		protected boolean isValidTarget(LevelReader level, BlockPos pos) {
+			// Only nest on hay bales with air above
+			return level.getBlockState(pos).is(Blocks.HAY_BLOCK) &&
+					level.getBlockState(pos.above()).isAir();
+		}
 	}
 }
