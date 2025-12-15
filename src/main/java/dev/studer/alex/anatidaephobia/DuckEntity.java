@@ -148,6 +148,12 @@ public class DuckEntity extends PathfinderMob {
 		}
 
 		@Override
+		public double acceptedDistance() {
+			// Ensure ducks go right on the hay
+			return 0.001;
+		}
+
+		@Override
 		protected boolean isValidTarget(LevelReader level, BlockPos pos) {
 			// Only nest on hay bales with air above
 			return level.getBlockState(pos).is(Blocks.HAY_BLOCK) &&
