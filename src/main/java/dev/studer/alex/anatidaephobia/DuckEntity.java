@@ -35,6 +35,32 @@ public class DuckEntity extends PathfinderMob {
 
 	public DuckEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
+		// Make the nametag always visible
+		this.setCustomNameVisible(true);
+	}
+
+	@Override
+	public Component getName() {
+		// Generate a dynamic nametag showing duck name + state
+		String duckName = generateDuckName();
+		String state = getDuckState();
+		return Component.literal(duckName + " [" + state + "]");
+	}
+
+	private String generateDuckName() {
+		// Generate a name based on UUID to keep it consistent
+		String[] names = {"Quackers", "Waddles", "Donald", "Daffy", "Howard", "Mallard", "Puddles"};
+		int index = Math.abs(this.getUUID().hashCode()) % names.length;
+		return names[index];
+	}
+
+	private String getDuckState() {
+		// Show current state - you can customize this to show whatever you want
+		if (this.isDeadOrDying()) {
+			return "Dead";
+		}
+
+		return "Cool";
 	}
 
 	@Override
