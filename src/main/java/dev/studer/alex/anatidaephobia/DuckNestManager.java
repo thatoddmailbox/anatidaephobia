@@ -10,7 +10,7 @@ public class DuckNestManager {
 	private static HashMap<UUID, BlockPos> claimedNests = new HashMap<>();
 
 	public static boolean isNestFree(BlockPos p, UUID self) {
-		return !claimedNests.containsValue(p) && (claimedNests.get(self) != p);
+		return !claimedNests.containsValue(p) || (claimedNests.get(self) == p);
 	}
 
 	public static void claimNest(final DuckEntity d, BlockPos p) {

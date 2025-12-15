@@ -26,6 +26,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 import java.util.HashMap;
 
@@ -178,13 +179,20 @@ public class DuckEntity extends PathfinderMob {
 			if (this.isReachedTarget() && !nesting) {
 				LogUtils.getLogger().info("[{}] reached goal", duck.getUUID());
 				nesting = true;
+				nestingTicks = 0;
 			}
 
 			if (nesting) {
 				nestingTicks++;
 				if (nestingTicks > NEST_DURATION) {
 					// we did it
-					// TODO: lay an egg or something?
+
+					// TODO: should lay a special golden duck egg or something?
+					if (this.duck.level() instanceof ServerLevel) {
+						this.duck.spawnAtLocation((ServerLevel) this.duck.level(), new ItemStack(Items.EGG));
+					}
+					this.duck.gameEvent(GameEvent.ENTITY_PLACE);
+
 					nesting = false;
 					blockPos = BlockPos.ZERO;
 				}
@@ -193,19 +201,23 @@ public class DuckEntity extends PathfinderMob {
 
 		@Override
 		public boolean canContinueToUse() {
+//			LogUtils.getLogger().info("[{}] canContinueToUse 1", duck.getUUID());
 			if (super.canContinueToUse()) {
 				return true;
 			}
 
+//			LogUtils.getLogger().info("[{}] canContinueToUse 2", duck.getUUID());
 			if (blockPos != BlockPos.ZERO && isValidTarget(this.mob.level(), blockPos)) {
 				// if we have somewhere to go, keep trying to go there (so we hold onto the nest claim)
 				return true;
 			}
 
+//			LogUtils.getLogger().info("[{}] canContinueToUse 3", duck.getUUID());
 			if (nesting && isValidTarget(this.mob.level(), blockPos)) {
 				return true;
 			}
 
+//			LogUtils.getLogger().info("[{}] canContinueToUse 4", duck.getUUID());
 			return false;
 		}
 
