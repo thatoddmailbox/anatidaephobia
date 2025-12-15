@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
 public class AnatidaephobiaEntities {
-	public static final Identifier DUCK_ID = Identifier.tryBuild(Anatidaephobia.MOD_ID, "duck");
+	public static final Identifier DUCK_ID = Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck");
 	public static final EntityType<DuckEntity> DUCK = Registry.register(
 			BuiltInRegistries.ENTITY_TYPE,
 			DUCK_ID,
