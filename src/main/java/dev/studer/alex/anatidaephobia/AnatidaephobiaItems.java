@@ -1,0 +1,35 @@
+package dev.studer.alex.anatidaephobia;
+
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
+
+import java.util.function.Function;
+
+public class AnatidaephobiaItems {
+	public static final Item DUCK_SPAWN_EGG = register("duck_spawn_egg", SpawnEggItem::new, new Item.Properties().spawnEgg(AnatidaephobiaEntities.DUCK));
+
+	public static Item register(String name, Function<Item.Properties, Item> itemFactory, Item.Properties settings) {
+		// Create the item key.
+		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, name));
+
+		// Create the item instance.
+		Item item = itemFactory.apply(settings.setId(itemKey));
+
+		// Register the item.
+		Registry.register(BuiltInRegistries.ITEM, itemKey, item);
+
+		return item;
+	}
+
+	public static void init() {
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS)
+				.register((itemGroup) -> itemGroup.accept(DUCK_SPAWN_EGG));
+	}
+}
