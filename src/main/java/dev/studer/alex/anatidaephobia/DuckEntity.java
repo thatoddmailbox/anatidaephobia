@@ -81,7 +81,7 @@ public class DuckEntity extends PathfinderMob {
 	@Override
 	public void handleEntityEvent(final byte id) {
 		if (id == EVENT_ID_LOVE) {
-			for(int i = 0; i < 7; ++i) {
+			for (int i = 0; i < 7; ++i) {
 				double xa = this.random.nextGaussian() * 0.02;
 				double ya = this.random.nextGaussian() * 0.02;
 				double za = this.random.nextGaussian() * 0.02;
