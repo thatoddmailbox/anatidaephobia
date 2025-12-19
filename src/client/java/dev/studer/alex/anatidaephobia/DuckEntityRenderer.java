@@ -12,7 +12,6 @@ public class DuckEntityRenderer extends MobRenderer<DuckEntity, LivingEntityRend
 
     @Override
     public Identifier getTextureLocation(LivingEntityRenderState entity) {
-        // TODO: draw this
         return Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "textures/entity/duck/duck.png");
     }
 
