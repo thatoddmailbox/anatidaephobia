@@ -22,6 +22,7 @@
 			"dev.studer.alex.anatidaephobia.AnatidaephobiaClient"
 		]
 	},
+	"accessWidener": "anatidaephobia.classtweaker",
 	"mixins": [
 		"anatidaephobia.mixins.json",
 		{

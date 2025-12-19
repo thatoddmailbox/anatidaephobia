@@ -3,6 +3,7 @@
 	"package": "dev.studer.alex.anatidaephobia.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"CreeperMixin",
 		"ExampleMixin"
 	],
 	"injectors": {
