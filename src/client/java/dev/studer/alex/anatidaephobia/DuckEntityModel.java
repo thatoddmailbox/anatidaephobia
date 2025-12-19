@@ -51,4 +51,13 @@ public class DuckEntityModel extends EntityModel<LivingEntityRenderState> {
 
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
+
+    @Override
+    public void setupAnim(LivingEntityRenderState state) {
+        super.setupAnim(state);
+
+        // Convert degrees to radians and apply to head
+        this.head.xRot = state.xRot * ((float)Math.PI / 180F);
+        this.head.yRot = state.yRot * ((float)Math.PI / 180F);
+    }
 }
