@@ -35,5 +35,8 @@ public class AnatidaephobiaItems {
 	public static void init() {
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS)
 				.register((itemGroup) -> itemGroup.accept(DUCK_SPAWN_EGG));
+
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.INGREDIENTS)
+				.register((itemGroup) -> itemGroup.accept(DUCK_EGG));
 	}
 }
