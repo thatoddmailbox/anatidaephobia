@@ -1,6 +1,7 @@
 package dev.studer.alex.anatidaephobia;
 
 import com.mojang.logging.LogUtils;
+import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
 
 import java.util.HashMap;
@@ -13,13 +14,13 @@ public class DuckNestManager {
 		return !claimedNests.containsValue(p) || (claimedNests.get(self) == p);
 	}
 
-	public static void claimNest(final DuckEntity d, BlockPos p) {
+	public static void claimNest(final Duck d, BlockPos p) {
 		LogUtils.getLogger().info("[nestmgr] claimNest {} {}", d.getUUID(), p);
 		claimedNests.put(d.getUUID(), p);
 		LogUtils.getLogger().info("[nestmgr] claimNest {}", claimedNests);
 	}
 
-	public static void unclaimNest(final DuckEntity d) {
+	public static void unclaimNest(final Duck d) {
 		LogUtils.getLogger().info("[nestmgr] unclaimNest {}", d.getUUID());
 		claimedNests.remove(d.getUUID());
 		LogUtils.getLogger().info("[nestmgr] unclaimNest {}", claimedNests);

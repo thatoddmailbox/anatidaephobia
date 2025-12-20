@@ -1,6 +1,9 @@
-package dev.studer.alex.anatidaephobia;
+package dev.studer.alex.anatidaephobia.entity;
 
 import com.mojang.logging.LogUtils;
+import dev.studer.alex.anatidaephobia.Anatidaephobia;
+import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
+import dev.studer.alex.anatidaephobia.DuckNestManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -32,13 +35,13 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public class DuckEntity extends PathfinderMob {
+public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
 
 	public int duckXP = 0;
 	public int duckLevel = 1;
 
-	public DuckEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
 		// Make the nametag always visible
 		this.setCustomNameVisible(true);
@@ -212,12 +215,12 @@ public class DuckEntity extends PathfinderMob {
 		private static final int NEST_DURATION = 2 * Anatidaephobia.TICKS_PER_SECOND;
 		private static final int NEST_TIMEOUT = 2 * Anatidaephobia.TICKS_PER_SECOND;
 
-		private final DuckEntity duck;
+		private final Duck duck;
 		private boolean nesting = false;
 		private int nestingTicks = 0;
 		private int nestingTimeoutTicks = 0;
 
-		public NestGoal(DuckEntity duck, double speedModifier, int searchRange) {
+		public NestGoal(Duck duck, double speedModifier, int searchRange) {
 			super(duck, speedModifier, searchRange);
 			this.duck = duck;
 		}

@@ -1,11 +1,12 @@
 package dev.studer.alex.anatidaephobia;
 
+import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 
-public class DuckEntityRenderer extends MobRenderer<DuckEntity, LivingEntityRenderState, DuckEntityModel> {
+public class DuckEntityRenderer extends MobRenderer<Duck, LivingEntityRenderState, DuckEntityModel> {
 	public DuckEntityRenderer(EntityRendererProvider.Context context) {
 		super(context, new DuckEntityModel(context.bakeLayer(AnatidaephobiaClient.MODEL_DUCK_LAYER)), 0.5f);
 	}

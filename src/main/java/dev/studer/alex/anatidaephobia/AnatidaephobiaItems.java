@@ -1,5 +1,6 @@
 package dev.studer.alex.anatidaephobia;
 
+import dev.studer.alex.anatidaephobia.item.DuckEggItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

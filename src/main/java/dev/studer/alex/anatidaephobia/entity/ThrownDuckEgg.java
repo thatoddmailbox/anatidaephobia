@@ -1,5 +1,7 @@
-package dev.studer.alex.anatidaephobia;
+package dev.studer.alex.anatidaephobia.entity;
 
+import dev.studer.alex.anatidaephobia.AnatidaephobiaEntities;
+import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityDimensions;
@@ -13,18 +15,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
-public class ThrownDuckEggEntity extends ThrowableItemProjectile {
+public class ThrownDuckEgg extends ThrowableItemProjectile {
 	private static final EntityDimensions ZERO_SIZED_DIMENSIONS = EntityDimensions.fixed(0.0F, 0.0F);
 
-	public ThrownDuckEggEntity(EntityType<ThrownDuckEggEntity> type, Level level) {
+	public ThrownDuckEgg(EntityType<ThrownDuckEgg> type, Level level) {
 		super(type, level);
 	}
 
-	public ThrownDuckEggEntity(final Level level, final LivingEntity mob, final ItemStack itemStack) {
+	public ThrownDuckEgg(final Level level, final LivingEntity mob, final ItemStack itemStack) {
 		super(AnatidaephobiaEntities.THROWN_DUCK_EGG, mob, level, itemStack);
 	}
 
-	public ThrownDuckEggEntity(final Level level, final double x, final double y, final double z, final ItemStack itemStack) {
+	public ThrownDuckEgg(final Level level, final double x, final double y, final double z, final ItemStack itemStack) {
 		super(AnatidaephobiaEntities.THROWN_DUCK_EGG, x, y, z, level, itemStack);
 	}
 
@@ -53,7 +55,7 @@ public class ThrownDuckEggEntity extends ThrowableItemProjectile {
 				}
 
 				for(int i = 0; i < count; ++i) {
-					DuckEntity duck = AnatidaephobiaEntities.DUCK.create(this.level(),  EntitySpawnReason.TRIGGERED);
+					Duck duck = AnatidaephobiaEntities.DUCK.create(this.level(), EntitySpawnReason.TRIGGERED);
 					if (duck != null) {
 						duck.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
 						if (!duck.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {

@@ -1,5 +1,6 @@
-package dev.studer.alex.anatidaephobia;
+package dev.studer.alex.anatidaephobia.item;
 
+import dev.studer.alex.anatidaephobia.entity.ThrownDuckEgg;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerLevel;
@@ -27,7 +28,7 @@ public class DuckEggItem extends EggItem {
 		ItemStack itemStack = player.getItemInHand(hand);
 		level.playSound((Entity)null, player.getX(), player.getY(), player.getZ(), (SoundEvent) SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
 		if (level instanceof ServerLevel serverLevel) {
-			Projectile.spawnProjectileFromRotation(ThrownDuckEggEntity::new, serverLevel, itemStack, player, 0.0F, 1.5F, 1.0F);
+			Projectile.spawnProjectileFromRotation(ThrownDuckEgg::new, serverLevel, itemStack, player, 0.0F, 1.5F, 1.0F);
 		}
 
 		player.awardStat(Stats.ITEM_USED.get(this));
@@ -37,6 +38,6 @@ public class DuckEggItem extends EggItem {
 
 	@Override
 	public Projectile asProjectile(final Level level, final Position position, final ItemStack itemStack, final Direction direction) {
-		return new ThrownDuckEggEntity(level, position.x(), position.y(), position.z(), itemStack);
+		return new ThrownDuckEgg(level, position.x(), position.y(), position.z(), itemStack);
 	}
 }

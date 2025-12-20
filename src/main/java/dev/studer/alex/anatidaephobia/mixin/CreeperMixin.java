@@ -1,6 +1,6 @@
 package dev.studer.alex.anatidaephobia.mixin;
 
-import dev.studer.alex.anatidaephobia.DuckEntity;
+import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ public class CreeperMixin {
 		Creeper self = (Creeper)(Object)this;
 		self.goalSelector.addGoal(3, new AvoidEntityGoal<>(
 				self,
-				DuckEntity.class,  // The duck entity class
+				Duck.class,  // The duck entity class
 				8.0F,              // Detection range
 				1.0D,              // Walk speed
 				1.4D               // Sprint speed
