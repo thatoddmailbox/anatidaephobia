@@ -29,9 +29,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class DuckEntity extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
+
+	public int duckXP = 0;
+	public int duckLevel = 1;
 
 	public DuckEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
@@ -40,11 +45,25 @@ public class DuckEntity extends PathfinderMob {
 	}
 
 	@Override
+	protected void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);  // Always call super first!
+		output.putInt("DuckXP", this.duckXP);
+		output.putInt("DuckLevel", this.duckLevel);
+	}
+
+	@Override
+	protected void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);  // Always call super first!
+		this.duckXP = input.getIntOr("DuckXP", 0);
+		this.duckLevel = input.getIntOr("DuckLevel", 1);
+	}
+
+	@Override
 	public Component getName() {
 		// Generate a dynamic nametag showing duck name + state
 		String duckName = generateDuckName();
 		String state = getDuckState();
-		return Component.literal(duckName + " [" + state + "]");
+		return Component.literal(duckName + " [Level " + duckLevel + "] [" + state + "]");
 	}
 
 	private String generateDuckName() {
