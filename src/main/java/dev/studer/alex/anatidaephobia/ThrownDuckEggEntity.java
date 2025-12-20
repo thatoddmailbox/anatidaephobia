@@ -1,0 +1,78 @@
+package dev.studer.alex.anatidaephobia;
+
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+
+public class ThrownDuckEggEntity extends ThrowableItemProjectile {
+	public ThrownDuckEggEntity(EntityType<ThrownDuckEggEntity> type, Level level) {
+		super(type, level);
+	}
+
+	public ThrownDuckEggEntity(final Level level, final LivingEntity mob, final ItemStack itemStack) {
+		super(AnatidaephobiaEntities.THROWN_DUCK_EGG, mob, level, itemStack);
+	}
+
+	public ThrownDuckEggEntity(final Level level, final double x, final double y, final double z, final ItemStack itemStack) {
+		super(AnatidaephobiaEntities.THROWN_DUCK_EGG, x, y, z, level, itemStack);
+	}
+
+	public void handleEntityEvent(final byte id) {
+		if (id == 3) {
+			double v = 0.08;
+
+			for(int i = 0; i < 8; ++i) {
+				this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), ((double)this.random.nextFloat() - (double)0.5F) * 0.08, ((double)this.random.nextFloat() - (double)0.5F) * 0.08, ((double)this.random.nextFloat() - (double)0.5F) * 0.08);
+			}
+		}
+
+	}
+
+	protected void onHitEntity(final EntityHitResult hitResult) {
+		super.onHitEntity(hitResult);
+		hitResult.getEntity().hurt(this.damageSources().thrown(this, this.getOwner()), 0.0F);
+	}
+
+	protected void onHit(final HitResult hitResult) {
+		super.onHit(hitResult);
+		if (!this.level().isClientSide()) {
+			if (this.random.nextInt(8) == 0) {
+				int count = 1;
+				if (this.random.nextInt(32) == 0) {
+					count = 4;
+				}
+
+				for(int i = 0; i < count; ++i) {
+//					Chicken chicken = (Chicken)EntityType.CHICKEN.create(this.level(), EntitySpawnReason.TRIGGERED);
+//					if (chicken != null) {
+//						chicken.setAge(-24000);
+//						chicken.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+//						Optional var10000 = Optional.ofNullable((EitherHolder)this.getItem().get(DataComponents.CHICKEN_VARIANT)).flatMap((v) -> v.unwrap((HolderLookup.Provider)this.registryAccess()));
+//						Objects.requireNonNull(chicken);
+//						var10000.ifPresent(chicken::setVariant);
+//						if (!chicken.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {
+//							break;
+//						}
+//
+//						this.level().addFreshEntity(chicken);
+//					}
+				}
+			}
+
+			this.level().broadcastEntityEvent(this, (byte)3);
+			this.discard();
+		}
+
+	}
+
+	protected Item getDefaultItem() {
+		return AnatidaephobiaItems.DUCK_EGG;
+	}
+}
