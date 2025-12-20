@@ -9,6 +9,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.util.Mth;
 
 public class DuckEntityModel extends EntityModel<LivingEntityRenderState> {
 	private final ModelPart body;
@@ -59,5 +60,11 @@ public class DuckEntityModel extends EntityModel<LivingEntityRenderState> {
 		// Convert degrees to radians and apply to head
 		this.head.xRot = state.xRot * ((float)Math.PI / 180F);
 		this.head.yRot = state.yRot * ((float)Math.PI / 180F);
+
+		// Leg animation while walking
+		float walkSpeed = state.walkAnimationSpeed;
+		float walkPos = state.walkAnimationPos;
+		this.leg0.xRot = Mth.cos(walkPos * 0.6662F) * 1.4F * walkSpeed;
+		this.leg1.xRot = Mth.cos(walkPos * 0.6662F + (float)Math.PI) * 1.4F * walkSpeed;
 	}
 }
