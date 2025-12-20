@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -70,6 +71,11 @@ public class DuckEntity extends PathfinderMob {
 		this.goalSelector.addGoal(3, new NestGoal(this, 1.0, 16));
 		this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0));
 //		this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 6.0F));
+	}
+
+	@Override
+	public boolean fireImmune() {
+		return true;
 	}
 
 	@Override
@@ -133,19 +139,23 @@ public class DuckEntity extends PathfinderMob {
 		// If we're dying then we already would have triggered the behavior in die() so skip this code
 		if (result && !isDeadOrDying()) {
 			if (damageSource.getEntity() != null) {
-				if (damageSource.getEntity() instanceof ServerPlayer) {
-					ServerPlayer player = (ServerPlayer) damageSource.getEntity();
+				if (damageSource.getEntity() instanceof LivingEntity) {
+					LivingEntity livingEntity = (LivingEntity) damageSource.getEntity();
 
-					// Strike the player down with lightning.
+					// Strike the attacker down with lightning.
 					// We make it visual-only and call thunderHit ourselves manually.
 					// This is so we don't get collateral damage (such as, importantly, the duck!)
 					LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(serverLevel, EntitySpawnReason.TRIGGERED);
-					bolt.snapTo(player.getX(), player.getY(), player.getZ());
+					bolt.snapTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 					bolt.setVisualOnly(true);
 					serverLevel.addFreshEntity(bolt);
-					player.thunderHit(serverLevel, bolt);
+					livingEntity.thunderHit(serverLevel, bolt);
 
-					player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
+					if (damageSource.getEntity() instanceof ServerPlayer) {
+						// If it was a player, send them a threat.
+						ServerPlayer player = (ServerPlayer) damageSource.getEntity();
+						player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
+					}
 				}
 			}
 		}
@@ -162,6 +172,9 @@ public class DuckEntity extends PathfinderMob {
 			player.level().setWeatherParameters(0, 10*Anatidaephobia.TICKS_PER_SECOND, true, true);
 
 			player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_death"));
+		} else if (damageSource.getEntity() instanceof LivingEntity) {
+			LivingEntity livingEntity = (LivingEntity) damageSource.getEntity();
+			// TODO: should we do something here?
 		}
 
 		super.die(damageSource);
