@@ -226,9 +226,8 @@ public class DuckEntity extends PathfinderMob {
 					LogUtils.getLogger().info("[{}] nested", duck.getUUID());
 					// we did it
 
-					// TODO: should lay a special golden duck egg or something?
 					if (this.duck.level() instanceof ServerLevel) {
-						this.duck.spawnAtLocation((ServerLevel) this.duck.level(), new ItemStack(Items.EGG));
+						this.duck.spawnAtLocation((ServerLevel) this.duck.level(), new ItemStack(AnatidaephobiaItems.DUCK_EGG));
 					}
 					this.duck.gameEvent(GameEvent.ENTITY_PLACE);
 
