@@ -17,7 +17,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 	public DuckScreen(DuckMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
 		this.imageWidth = 176;
-		this.imageHeight = 166;
+		this.imageHeight = 222;
 	}
 
 	@Override
