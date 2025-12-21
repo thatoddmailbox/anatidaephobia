@@ -45,19 +45,20 @@ public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
 
 	// This sucks!! I would really like to wrap everything in a nice DuckData reoord
-	// Unfortunately, I can't register my custom SynchedEntityData serializer since Fabric doesn't seem to support it
+	// Unfortunately, I can't register a custom EntityDataSerializer for my data type since Fabric doesn't seem to support it
 	// (at least I think it doesn't)
 	// So instead we have this sadness
 
 	private static final EntityDataAccessor<String> DATA_DUCK_NAME = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.STRING);
-
-	public int duckXP = 0;
-	public int duckLevel = 1;
+	private static final EntityDataAccessor<Integer> DATA_DUCK_XP = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_DUCK_LEVEL = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 
 	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
 
 		this.setDuckName(generateDuckName());
+		this.setDuckXP(0);
+		this.setDuckLevel(1);
 
 		// Make the nametag always visible
 		this.setCustomNameVisible(true);
@@ -74,29 +75,31 @@ public class Duck extends PathfinderMob {
 	protected void addAdditionalSaveData(ValueOutput output) {
 		super.addAdditionalSaveData(output);  // Always call super first!
 		output.putString("DuckName", getDuckName());
-		output.putInt("DuckXP", this.duckXP);
-		output.putInt("DuckLevel", this.duckLevel);
+		output.putInt("DuckXP", getDuckXP());
+		output.putInt("DuckLevel", getDuckLevel());
 	}
 
 	@Override
 	protected void readAdditionalSaveData(ValueInput input) {
 		super.readAdditionalSaveData(input);  // Always call super first!
 		setDuckName(input.getStringOr("DuckName", "Confused Duck"));
-		this.duckXP = input.getIntOr("DuckXP", 0);
-		this.duckLevel = input.getIntOr("DuckLevel", 1);
+		setDuckXP(input.getIntOr("DuckXP", 0));
+		setDuckLevel(input.getIntOr("DuckLevel", 1));
 	}
 
 	@Override
 	protected void defineSynchedData(SynchedEntityData.Builder builder) {
 		super.defineSynchedData(builder);
 		builder.define(DATA_DUCK_NAME, "");  // default empty string
+		builder.define(DATA_DUCK_XP, 0);
+		builder.define(DATA_DUCK_LEVEL, 1);
 	}
 
 	@Override
 	public Component getName() {
 		// Generate a dynamic nametag showing duck name + state
 		String state = getDuckState();
-		return Component.literal(getDuckName() + " [Level " + duckLevel + "] [" + state + "]");
+		return Component.literal(getDuckName() + " [Level " + getDuckLevel() + "] [" + state + "]");
 	}
 
 	public String getDuckName() {
@@ -105,6 +108,22 @@ public class Duck extends PathfinderMob {
 
 	public void setDuckName(String name) {
 		this.entityData.set(DATA_DUCK_NAME, name);
+	}
+
+	public int getDuckXP() {
+		return this.entityData.get(DATA_DUCK_XP);
+	}
+
+	public void setDuckXP(int xp) {
+		this.entityData.set(DATA_DUCK_XP, xp);
+	}
+
+	public int getDuckLevel() {
+		return this.entityData.get(DATA_DUCK_LEVEL);
+	}
+
+	public void setDuckLevel(int level) {
+		this.entityData.set(DATA_DUCK_LEVEL, level);
 	}
 
 	private String getDuckState() {
