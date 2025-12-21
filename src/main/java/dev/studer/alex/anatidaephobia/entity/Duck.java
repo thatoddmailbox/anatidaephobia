@@ -4,8 +4,11 @@ import com.mojang.logging.LogUtils;
 import dev.studer.alex.anatidaephobia.Anatidaephobia;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
+import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -149,6 +152,27 @@ public class Duck extends PathfinderMob {
 			if (this.level().isClientSide()) {
 				return InteractionResult.CONSUME;
 			}
+		}
+
+		if (!this.level().isClientSide()) {
+			Duck duck = this;
+			player.openMenu(new ExtendedScreenHandlerFactory<DuckMenuData>() {
+				@Override
+				public DuckMenuData getScreenOpeningData(ServerPlayer player) {
+					return new DuckMenuData(duck.getId());
+				}
+
+				@Override
+				public Component getDisplayName() {
+					return Component.translatable("gui.anatidaephobia.duck");
+				}
+
+				@Override
+				public DuckMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, net.minecraft.world.entity.player.Player player) {
+					return new DuckMenu(containerId, inventory, duck);
+				}
+			});
+			return InteractionResult.SUCCESS;
 		}
 
 		return super.mobInteract(player, hand);
