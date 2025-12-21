@@ -10,6 +10,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -39,37 +42,25 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class Duck extends PathfinderMob {
-	private static final byte EVENT_ID_LOVE = 100;
+	private byte EVENT_ID_LOVE = 100;
+
+	// This sucks!! I would really like to wrap everything in a nice DuckData reoord
+	// Unfortunately, I can't register my custom SynchedEntityData serializer since Fabric doesn't seem to support it
+	// (at least I think it doesn't)
+	// So instead we have this sadness
+
+	private static final EntityDataAccessor<String> DATA_DUCK_NAME = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.STRING);
 
 	public int duckXP = 0;
 	public int duckLevel = 1;
 
 	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
+
+		this.setDuckName(generateDuckName());
+
 		// Make the nametag always visible
 		this.setCustomNameVisible(true);
-	}
-
-	@Override
-	protected void addAdditionalSaveData(ValueOutput output) {
-		super.addAdditionalSaveData(output);  // Always call super first!
-		output.putInt("DuckXP", this.duckXP);
-		output.putInt("DuckLevel", this.duckLevel);
-	}
-
-	@Override
-	protected void readAdditionalSaveData(ValueInput input) {
-		super.readAdditionalSaveData(input);  // Always call super first!
-		this.duckXP = input.getIntOr("DuckXP", 0);
-		this.duckLevel = input.getIntOr("DuckLevel", 1);
-	}
-
-	@Override
-	public Component getName() {
-		// Generate a dynamic nametag showing duck name + state
-		String duckName = generateDuckName();
-		String state = getDuckState();
-		return Component.literal(duckName + " [Level " + duckLevel + "] [" + state + "]");
 	}
 
 	private String generateDuckName() {
@@ -77,6 +68,43 @@ public class Duck extends PathfinderMob {
 		String[] names = {"Quackers", "Waddles", "Donald", "Daffy", "Howard", "Mallard", "Puddles"};
 		int index = Math.abs(this.getUUID().hashCode()) % names.length;
 		return names[index];
+	}
+
+	@Override
+	protected void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);  // Always call super first!
+		output.putString("DuckName", getDuckName());
+		output.putInt("DuckXP", this.duckXP);
+		output.putInt("DuckLevel", this.duckLevel);
+	}
+
+	@Override
+	protected void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);  // Always call super first!
+		setDuckName(input.getStringOr("DuckName", "Confused Duck"));
+		this.duckXP = input.getIntOr("DuckXP", 0);
+		this.duckLevel = input.getIntOr("DuckLevel", 1);
+	}
+
+	@Override
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(DATA_DUCK_NAME, "");  // default empty string
+	}
+
+	@Override
+	public Component getName() {
+		// Generate a dynamic nametag showing duck name + state
+		String state = getDuckState();
+		return Component.literal(getDuckName() + " [Level " + duckLevel + "] [" + state + "]");
+	}
+
+	public String getDuckName() {
+		return this.entityData.get(DATA_DUCK_NAME);
+	}
+
+	public void setDuckName(String name) {
+		this.entityData.set(DATA_DUCK_NAME, name);
 	}
 
 	private String getDuckState() {
