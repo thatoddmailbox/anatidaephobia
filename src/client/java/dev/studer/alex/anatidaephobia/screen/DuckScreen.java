@@ -53,7 +53,11 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 
 		int xo = (this.width - this.imageWidth) / 2;
 		int yo = (this.height - this.imageHeight) / 2;
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND, xo + 16, yo + 16, 102, 5);
+
+		String level = "Level " + getMenu().getDuck().getDuckLevel();
+		graphics.drawString(this.font, level, (this.width - font.width(level)) / 2, yo + 16, 0xff404040, false);
+
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND, xo + 16, yo + 32, 102, 5);
 	}
 
 	@Override
