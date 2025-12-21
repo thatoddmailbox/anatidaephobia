@@ -40,6 +40,8 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 
 	@Override
 	protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+		// NOTE: this gets translated by (xo, yo) in AbstractContainerScreen
+
 		// can't use graphics.drawCenteredString because it forces drop shadow
 		Component title = getTitle();
 		graphics.drawString(this.font, title, (this.imageWidth - font.width(title)) / 2, this.titleLabelY, 0xff404040, false);
