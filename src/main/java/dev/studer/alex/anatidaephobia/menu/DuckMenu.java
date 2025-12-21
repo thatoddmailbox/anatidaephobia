@@ -23,7 +23,7 @@ public class DuckMenu extends AbstractContainerMenu {
 		// this.addSlot(new Slot(...));
 
 		// Add player inventory slots
-		this.addStandardInventorySlots(playerInventory, 8, 84);
+		// this.addStandardInventorySlots(playerInventory, 8, 84);
 	}
 
 	public Duck getDuck() {
