@@ -23,7 +23,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 	@Override
 	public Component getTitle() {
 		Duck duck = menu.getDuck();
-		return duck != null ? duck.getName() : super.getTitle();
+		return duck != null ? Component.literal(duck.getDuckName()) : super.getTitle();
 	}
 
 	@Override
