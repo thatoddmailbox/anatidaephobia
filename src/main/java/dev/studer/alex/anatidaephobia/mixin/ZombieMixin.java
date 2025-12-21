@@ -13,6 +13,6 @@ public class ZombieMixin {
 	@Inject(method = "registerGoals", at = @At("TAIL"))
 	private void addDuckAvoidance(CallbackInfo ci) {
 		Zombie self = (Zombie)(Object)this;
-		self.goalSelector.addGoal(3, new NearestAttackableTargetGoal(self, Duck.class, true));
+		self.goalSelector.addGoal(3, new NearestAttackableTargetGoal<>(self, Duck.class, true));
 	}
 }
