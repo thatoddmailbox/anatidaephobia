@@ -39,7 +39,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class Duck extends PathfinderMob {
-	private byte EVENT_ID_LOVE = 100;
+	private static final byte EVENT_ID_LOVE = 100;
 
 	public int duckXP = 0;
 	public int duckLevel = 1;
