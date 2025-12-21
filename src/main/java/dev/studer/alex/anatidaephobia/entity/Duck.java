@@ -219,10 +219,9 @@ public class Duck extends PathfinderMob {
 					return new DuckMenu(containerId, inventory, duck);
 				}
 			});
-			return InteractionResult.SUCCESS;
 		}
 
-		return super.mobInteract(player, hand);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
