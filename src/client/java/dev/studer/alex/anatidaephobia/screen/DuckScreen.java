@@ -14,6 +14,10 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 			Identifier.fromNamespaceAndPath("anatidaephobia",
 					"textures/gui/duck.png");
 
+	private static final Identifier EXPERIENCE_BAR_BACKGROUND = Identifier.withDefaultNamespace("container/villager/experience_bar_background");
+	private static final Identifier EXPERIENCE_BAR_CURRENT = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
+	private static final Identifier EXPERIENCE_BAR_RESULT = Identifier.withDefaultNamespace("container/villager/experience_bar_result");
+
 	public DuckScreen(DuckMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
 		this.imageWidth = 176;
@@ -39,6 +43,15 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		// can't use graphics.drawCenteredString because it forces drop shadow
 		Component title = getTitle();
 		graphics.drawString(this.font, title, (this.imageWidth - font.width(title)) / 2, this.titleLabelY, 0xff404040, false);
+	}
+
+	@Override
+	public void renderContents(final GuiGraphics graphics, final int mouseX, final int mouseY, final float a) {
+		super.renderContents(graphics, mouseX, mouseY, a);
+
+		int xo = (this.width - this.imageWidth) / 2;
+		int yo = (this.height - this.imageHeight) / 2;
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND, xo + 16, yo + 16, 102, 5);
 	}
 
 	@Override
