@@ -77,6 +77,8 @@ public class NestGoal extends MoveToBlockGoal {
 				}
 				this.duck.gameEvent(GameEvent.ENTITY_PLACE);
 
+				this.duck.addDuckXP(1);
+
 				nesting = false;
 				nestingTicks = 0;
 				nestingTimeoutTicks = 0;

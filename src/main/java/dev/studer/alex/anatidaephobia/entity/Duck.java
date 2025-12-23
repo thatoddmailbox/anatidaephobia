@@ -136,6 +136,11 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_XP, xp);
 	}
 
+	public void addDuckXP(int delta) {
+		setDuckXP(getDuckXP() + delta);
+		// TODO: level up animation or effect?
+	}
+
 	// XP thresholds for each level (total XP required to reach that level)
 	private static final int[] LEVEL_XP_THRESHOLDS = {0, 10, 30, 70, 170};
 
@@ -174,6 +179,16 @@ public class Duck extends PathfinderMob {
 
 	public void setDuckHunger(int hunger) {
 		this.entityData.set(DATA_DUCK_HUNGER, hunger);
+	}
+
+	public void addDuckHunger(int delta) {
+		int newHunger = Math.min(getDuckHunger() + delta, 10);
+		setDuckHunger(newHunger);
+	}
+
+	public void reduceDuckHunger(int delta) {
+		int newHunger = Math.max(getDuckHunger() - delta, 0);
+		setDuckHunger(newHunger);
 	}
 
 	public int getDuckStress() {
@@ -284,13 +299,27 @@ public class Duck extends PathfinderMob {
 		this.goalSelector.addGoal(4, waterAvoidingRandomStrollGoal);
 	}
 
+	private float hungerAccum = 0;
+
 	@Override
 	public void aiStep() {
 		super.aiStep();
 
-		// Update synced state on server side
 		if (!this.level().isClientSide()) {
+			// Update synced state on server side
 			updateDuckState();
+
+			if (getDeltaMovement().length() > 0.01) {
+				hungerAccum += 0.02f * getDeltaMovement().length() * 10;
+			}
+
+			// Calculate stat changes
+			if (tickCount % 20 == 0) {
+				if (hungerAccum > 4.0f) {
+					hungerAccum -= 4.0f;
+					addDuckHunger(1);
+				}
+			}
 		}
 	}
 
@@ -361,8 +390,7 @@ public class Duck extends PathfinderMob {
 				this.level().broadcastEntityEvent(this, EVENT_ID_LOVE);
 
 				if (!isBread) {
-					// TODO: should be hunger not XP
-					setDuckXP(getDuckXP() + getValueOfFood(itemStack));
+					reduceDuckHunger(getValueOfFood(itemStack));
 				}
 
 				return InteractionResult.SUCCESS_SERVER;
