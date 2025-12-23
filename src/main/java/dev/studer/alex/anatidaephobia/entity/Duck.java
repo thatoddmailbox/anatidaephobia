@@ -188,8 +188,11 @@ public class Duck extends PathfinderMob {
 	public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
 		ItemStack itemStack = player.getItemInHand(hand);
 		if (itemStack.is(AnatidaephobiaItems.DUCK_FOOD)) {
+			boolean isBread = false;
 			if (itemStack.is(Items.BREAD)) {
 				// RIP duck - bread is harmful to ducks!
+				isBread = true;
+
 				// Apply bread sickness effect for 20 seconds at amplifier 0
 				this.addEffect(new MobEffectInstance(
 						AnatidaephobiaMobEffects.BREAD_SICKNESS,
@@ -200,7 +203,12 @@ public class Duck extends PathfinderMob {
 
 			if (player instanceof ServerPlayer) {
 				ServerPlayer serverPlayer = (ServerPlayer) player;
-				serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
+
+				if (isBread) {
+					serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_bread"));
+				} else {
+					serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
+				}
 
 				this.usePlayerItem(player, hand, itemStack);
 				this.level().broadcastEntityEvent(this, EVENT_ID_LOVE);
