@@ -46,6 +46,18 @@ import net.minecraft.world.level.storage.ValueOutput;
 public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
 
+	// Duck state enum - synced to client via DATA_DUCK_STATE
+	public enum DuckState {
+		DEFAULT,
+		SCARED,
+		NESTING;
+
+		public static DuckState fromOrdinal(int ordinal) {
+			DuckState[] values = values();
+			return (ordinal >= 0 && ordinal < values.length) ? values[ordinal] : DEFAULT;
+		}
+	}
+
 	// This sucks!! I would really like to wrap everything in a nice DuckData reoord
 	// Unfortunately, I can't register a custom EntityDataSerializer for my data type since Fabric doesn't seem to support it
 	// (at least I think it doesn't)
@@ -56,6 +68,7 @@ public class Duck extends PathfinderMob {
 	private static final EntityDataAccessor<Integer> DATA_DUCK_HUNGER = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_STRESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_LONELINESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_DUCK_STATE = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 
 	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
@@ -102,6 +115,7 @@ public class Duck extends PathfinderMob {
 		builder.define(DATA_DUCK_HUNGER, 0);
 		builder.define(DATA_DUCK_STRESS, 0);
 		builder.define(DATA_DUCK_LONELINESS, 0);
+		builder.define(DATA_DUCK_STATE, DuckState.DEFAULT.ordinal());
 	}
 
 	@Override
@@ -183,13 +197,31 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_LONELINESS, loneliness);
 	}
 
+	public DuckState getDuckStateEnum() {
+		return DuckState.fromOrdinal(this.entityData.get(DATA_DUCK_STATE));
+	}
+
 	private String getDuckState() {
-		// Show current state - you can customize this to show whatever you want
 		if (this.isDeadOrDying()) {
 			return "Dead";
 		}
 
-		return "Cool";
+		return switch (getDuckStateEnum()) {
+			case SCARED -> "Scared";
+			case NESTING -> "Nesting";
+			case DEFAULT -> "Cool";
+		};
+	}
+
+	// Called on server to update the synced state based on active goals
+	private void updateDuckState() {
+		if (this.panicGoal != null && this.panicGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.SCARED.ordinal());
+		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
+		} else {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.DEFAULT.ordinal());
+		}
 	}
 
 	private int getValueOfFood(ItemStack itemStack) {
@@ -214,14 +246,38 @@ public class Duck extends PathfinderMob {
 		return 1; // default for any other duck food
 	}
 
+	private FloatGoal floatGoal;
+	private PanicGoal panicGoal;
+	private TemptGoal temptGoal;
+	private NestGoal nestGoal;
+	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
+
 	@Override
 	protected void registerGoals() {
-		this.goalSelector.addGoal(0, new FloatGoal(this));
-		this.goalSelector.addGoal(1, new PanicGoal(this, 1.4));
-		this.goalSelector.addGoal(2, new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD), false));
-		this.goalSelector.addGoal(3, new NestGoal(this, 1.0, 16));
-		this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0));
-//		this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 6.0F));
+		floatGoal = new FloatGoal(this);
+		this.goalSelector.addGoal(0, floatGoal);
+
+		panicGoal = new PanicGoal(this, 1.4);
+		this.goalSelector.addGoal(1, panicGoal);
+
+		temptGoal = new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD), false);
+		this.goalSelector.addGoal(2, temptGoal);
+
+		nestGoal = new NestGoal(this, 1.0, 16);
+		this.goalSelector.addGoal(3, nestGoal);
+
+		waterAvoidingRandomStrollGoal = new WaterAvoidingRandomStrollGoal(this, 1.0);
+		this.goalSelector.addGoal(4, waterAvoidingRandomStrollGoal);
+	}
+
+	@Override
+	public void aiStep() {
+		super.aiStep();
+
+		// Update synced state on server side
+		if (!this.level().isClientSide()) {
+			updateDuckState();
+		}
 	}
 
 	@Override
@@ -392,14 +448,22 @@ public class Duck extends PathfinderMob {
 		private int nestingTicks = 0;
 		private int nestingTimeoutTicks = 0;
 
+		protected boolean isRunning;
+
 		public NestGoal(Duck duck, double speedModifier, int searchRange) {
 			super(duck, speedModifier, searchRange);
 			this.duck = duck;
 		}
 
+		public boolean isRunning() {
+			return this.isRunning;
+		}
+
 		@Override
 		public void start() {
 			super.start();
+
+			isRunning = true;
 
 			LogUtils.getLogger().info("[{}] starting", duck.getUUID());
 			DuckNestManager.claimNest(duck, this.blockPos);
@@ -408,6 +472,8 @@ public class Duck extends PathfinderMob {
 		@Override
 		public void stop() {
 			super.stop();
+
+			isRunning = false;
 
 			nesting = false;
 			nestingTicks = 0;
