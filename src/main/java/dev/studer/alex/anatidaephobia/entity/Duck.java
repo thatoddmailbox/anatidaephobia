@@ -8,6 +8,7 @@ import dev.studer.alex.anatidaephobia.entity.ai.goal.DestressGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.LonelyGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
+import dev.studer.alex.anatidaephobia.entity.ai.goal.SocializeGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
@@ -56,7 +57,8 @@ public class Duck extends PathfinderMob {
 		HUNGRY,
 		STRESSED,
 		DESTRESSING,
-		LONELY;
+		LONELY,
+		SOCIALIZING;
 
 		public static DuckState fromOrdinal(int ordinal) {
 			DuckState[] values = values();
@@ -212,6 +214,21 @@ public class Duck extends PathfinderMob {
 		setDuckLoneliness(newLoneliness);
 	}
 
+	// Socialize partner - used for mutual claiming in SocializeGoal
+	private Duck socializePartner;
+
+	public Duck getSocializePartner() {
+		return this.socializePartner;
+	}
+
+	public void setSocializePartner(Duck partner) {
+		this.socializePartner = partner;
+	}
+
+	public boolean isAvailableForSocializing() {
+		return getDuckStateEnum() == DuckState.DEFAULT;
+	}
+
 	public DuckState getDuckStateEnum() {
 		return DuckState.fromOrdinal(this.entityData.get(DATA_DUCK_STATE));
 	}
@@ -228,6 +245,7 @@ public class Duck extends PathfinderMob {
 			case STRESSED -> "Stressed";
 			case DESTRESSING -> "Relaxing";
 			case LONELY -> "Lonely";
+			case SOCIALIZING -> "Chatting";
 			case DEFAULT -> "Cool";
 		};
 	}
@@ -244,6 +262,8 @@ public class Duck extends PathfinderMob {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.HUNGRY.ordinal());
 		} else if (this.lonelyGoal != null && this.lonelyGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.LONELY.ordinal());
+		} else if (this.socializeGoal != null && this.socializeGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.SOCIALIZING.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
 		} else {
@@ -270,6 +290,7 @@ public class Duck extends PathfinderMob {
 	private StressGoal stressGoal;
 	private DestressGoal destressGoal;
 	private LonelyGoal lonelyGoal;
+	private SocializeGoal socializeGoal;
 	private NestGoal nestGoal;
 	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
 
@@ -295,6 +316,9 @@ public class Duck extends PathfinderMob {
 
 		lonelyGoal = new LonelyGoal(this);
 		this.goalSelector.addGoal(2, lonelyGoal);
+
+		socializeGoal = new SocializeGoal(this);
+		this.goalSelector.addGoal(2, socializeGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(3, nestGoal);
