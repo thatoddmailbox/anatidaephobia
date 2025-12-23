@@ -185,7 +185,7 @@ public class Duck extends PathfinderMob {
 	@Override
 	public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
 		ItemStack itemStack = player.getItemInHand(hand);
-		if (itemStack.is(Items.BREAD)) {
+		if (itemStack.is(AnatidaephobiaItems.DUCK_FOOD)) {
 			if (player instanceof ServerPlayer) {
 				ServerPlayer serverPlayer = (ServerPlayer) player;
 				serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));

@@ -1,5 +1,14 @@
 {
 	"values": [
-		"minecraft:bread"
+		"minecraft:bread",
+		"minecraft:wheat_seeds",
+		"minecraft:melon_seeds",
+		"minecraft:pumpkin_seeds",
+		"minecraft:beetroot_seeds",
+		"minecraft:seagrass",
+		"minecraft:kelp",
+		"minecraft:beetroot",
+		"minecraft:sweet_berries",
+		"minecraft:melon_slice"
 	]
 }
