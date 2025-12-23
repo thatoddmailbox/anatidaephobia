@@ -14,6 +14,9 @@ public class BreadSicknessMobEffect extends MobEffect {
     // Ticks between damage applications (same as poison: 25 ticks = 1.25 seconds at amplifier 0)
     public static final int DAMAGE_INTERVAL = 25;
 
+    // Delay before first damage tick (4 seconds) - gives time to see the effect icon
+    public static final int INITIAL_DELAY = 80;
+
     public BreadSicknessMobEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
@@ -36,10 +39,16 @@ public class BreadSicknessMobEffect extends MobEffect {
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int tickCount, int amplification) {
+        // Wait for initial delay before first damage
+        if (tickCount < INITIAL_DELAY) {
+            return false;
+        }
+
         // Same formula as poison: interval halves with each amplifier level
+        int adjustedTick = tickCount - INITIAL_DELAY;
         int interval = DAMAGE_INTERVAL >> amplification;
         if (interval > 0) {
-            return tickCount % interval == 0;
+            return adjustedTick % interval == 0;
         } else {
             return true;
         }
