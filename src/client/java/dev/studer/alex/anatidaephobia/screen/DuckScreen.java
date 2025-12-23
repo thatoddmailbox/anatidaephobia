@@ -64,7 +64,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		int duckStress = duck.getDuckStress();
 		int duckLoneliness = duck.getDuckLoneliness();
 
-		String duckLevelString = "Level " + duckLevel;
+		String duckLevelString = "Level " + duckLevel + (duckLevel >= Duck.getMaxLevel() ? " (max level!)" : "");
 		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 18, 0xff404040, false);
 
 		int xpBarWidth = 102;
