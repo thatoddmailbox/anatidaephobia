@@ -7,6 +7,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.ArrayDeque;
 import java.util.EnumSet;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 public class DestressGoal extends Goal {
 	private static final int STRESS_THRESHOLD = 3;
+	private static final int MAX_STRESS = 10;
 	private static final int SEARCH_RANGE = 16;
 	private static final int MIN_WATER_AREA = 16;
 	private static final double SPEED_MODIFIER = 1.0;
@@ -47,16 +49,27 @@ public class DestressGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (duck.getDuckStress() < STRESS_THRESHOLD) {
+		int stress = duck.getDuckStress();
+		if (stress < STRESS_THRESHOLD) {
 			return false;
 		}
 
+		// If already in water, just check if it's a valid body
 		if (duck.isInWater()) {
-			// Verify the water body is large enough (using cache)
 			return isWaterBodyValid(duck.blockPosition());
 		}
 
-		// Try to find nearby water
+		// Probabilistic triggering - gives other goals a chance to run
+		// At max stress, always try to find water. At lower levels, random chance.
+		if (stress < MAX_STRESS) {
+			// Probability increases with stress: ~12.5% at stress 3, up to 100% at stress 10
+			float probability = (stress - STRESS_THRESHOLD + 1) / (float)(MAX_STRESS - STRESS_THRESHOLD + 1);
+			if (duck.getRandom().nextFloat() >= probability) {
+				return false;
+			}
+		}
+
+		// Try to find nearby accessible water
 		return findNearestWater();
 	}
 
@@ -110,8 +123,12 @@ public class DestressGoal extends Goal {
 				if (waterBody.size() >= MIN_WATER_AREA) {
 					double distSq = pos.distSqr(duckPos);
 					if (distSq < bestDistSq) {
-						bestDistSq = distSq;
-						bestPos = pos.immutable();
+						// Verify path exists before accepting this water body
+						Path path = duck.getNavigation().createPath(pos, 1);
+						if (path != null && path.canReach()) {
+							bestDistSq = distSq;
+							bestPos = pos.immutable();
+						}
 					}
 				}
 			}
