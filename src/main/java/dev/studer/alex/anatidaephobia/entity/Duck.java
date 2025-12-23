@@ -4,6 +4,7 @@ import dev.studer.alex.anatidaephobia.Anatidaephobia;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaMobEffects;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
+import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import net.minecraft.core.particles.ParticleTypes;
@@ -45,7 +46,8 @@ public class Duck extends PathfinderMob {
 	public enum DuckState {
 		DEFAULT,
 		SCARED,
-		NESTING;
+		NESTING,
+		HUNGRY;
 
 		public static DuckState fromOrdinal(int ordinal) {
 			DuckState[] values = values();
@@ -219,6 +221,7 @@ public class Duck extends PathfinderMob {
 		return switch (getDuckStateEnum()) {
 			case SCARED -> "Scared";
 			case NESTING -> "Nesting";
+			case HUNGRY -> "Hungry";
 			case DEFAULT -> "Cool";
 		};
 	}
@@ -227,6 +230,8 @@ public class Duck extends PathfinderMob {
 	private void updateDuckState() {
 		if (this.panicGoal != null && this.panicGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.SCARED.ordinal());
+		} else if (this.hungryGoal != null && this.hungryGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.HUNGRY.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
 		} else {
@@ -278,6 +283,7 @@ public class Duck extends PathfinderMob {
 	private FloatGoal floatGoal;
 	private PanicGoal panicGoal;
 	private TemptGoal temptGoal;
+	private HungryGoal hungryGoal;
 	private NestGoal nestGoal;
 	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
 
@@ -291,6 +297,9 @@ public class Duck extends PathfinderMob {
 
 		temptGoal = new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD), false);
 		this.goalSelector.addGoal(2, temptGoal);
+
+		hungryGoal = new HungryGoal(this);
+		this.goalSelector.addGoal(2, hungryGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(3, nestGoal);
@@ -309,8 +318,12 @@ public class Duck extends PathfinderMob {
 			// Update synced state on server side
 			updateDuckState();
 
-			if (getDeltaMovement().length() > 0.01) {
-				hungerAccum += 0.02f * getDeltaMovement().length() * 10;
+			if (getDeltaMovement().length() > 0.01 && getDuckStateEnum() != DuckState.HUNGRY) {
+				hungerAccum += 0.02f * getDeltaMovement().length();
+			}
+
+			if (getDuckStateEnum() == DuckState.NESTING) {
+				hungerAccum += 0.10f;
 			}
 
 			// Calculate stat changes
