@@ -137,6 +137,28 @@ public class Duck extends PathfinderMob {
 		return "Cool";
 	}
 
+	private int getValueOfFood(ItemStack itemStack) {
+		if (itemStack.is(Items.WHEAT_SEEDS) || itemStack.is(Items.MELON_SEEDS) ||
+				itemStack.is(Items.PUMPKIN_SEEDS) || itemStack.is(Items.BEETROOT_SEEDS) ||
+				itemStack.is(Items.TORCHFLOWER_SEEDS) || itemStack.is(Items.PITCHER_POD)) {
+			return 1; // seeds
+		} else if (itemStack.is(Items.SEAGRASS)) {
+			return 1;
+		} else if (itemStack.is(Items.KELP) || itemStack.is(Items.DRIED_KELP)) {
+			return 2;
+		} else if (itemStack.is(Items.BEETROOT)) {
+			return 2; // TODO: but they don't like it so much
+		} else if (itemStack.is(Items.SWEET_BERRIES)) {
+			return 3;
+		} else if (itemStack.is(Items.MELON_SLICE)) {
+			return 4;
+		} else if (itemStack.is(Items.GLISTERING_MELON_SLICE)) {
+			return 6;
+		}
+
+		return 1; // default for any other duck food
+	}
+
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
@@ -212,6 +234,11 @@ public class Duck extends PathfinderMob {
 
 				this.usePlayerItem(player, hand, itemStack);
 				this.level().broadcastEntityEvent(this, EVENT_ID_LOVE);
+
+				if (!isBread) {
+					// TODO: should be hunger not XP
+					setDuckXP(getDuckXP() + getValueOfFood(itemStack));
+				}
 
 				return InteractionResult.SUCCESS_SERVER;
 			}
