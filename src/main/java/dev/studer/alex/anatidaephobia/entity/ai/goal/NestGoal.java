@@ -80,6 +80,7 @@ public class NestGoal extends MoveToBlockGoal {
 
 				this.duck.addDuckXP(1);
 				this.duck.addDuckStress(Mth.ceil(this.duck.getDuckLevel() / 2.0f));
+				this.duck.addDuckLoneliness(1);
 
 				nesting = false;
 				nestingTicks = 0;

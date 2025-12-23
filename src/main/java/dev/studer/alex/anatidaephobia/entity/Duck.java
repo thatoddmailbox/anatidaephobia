@@ -6,6 +6,7 @@ import dev.studer.alex.anatidaephobia.AnatidaephobiaMobEffects;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.DestressGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
+import dev.studer.alex.anatidaephobia.entity.ai.goal.LonelyGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
@@ -45,6 +46,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
 	private byte EVENT_ID_STRESS = 101;
+	private byte EVENT_ID_LONELY = 102;
 
 	// Duck state enum - synced to client via DATA_DUCK_STATE
 	public enum DuckState {
@@ -53,7 +55,8 @@ public class Duck extends PathfinderMob {
 		NESTING,
 		HUNGRY,
 		STRESSED,
-		DESTRESSING;
+		DESTRESSING,
+		LONELY;
 
 		public static DuckState fromOrdinal(int ordinal) {
 			DuckState[] values = values();
@@ -199,6 +202,16 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_LONELINESS, loneliness);
 	}
 
+	public void addDuckLoneliness(int delta) {
+		int newLoneliness = Math.min(getDuckLoneliness() + delta, 10);
+		setDuckLoneliness(newLoneliness);
+	}
+
+	public void reduceDuckLoneliness(int delta) {
+		int newLoneliness = Math.max(getDuckLoneliness() - delta, 0);
+		setDuckLoneliness(newLoneliness);
+	}
+
 	public DuckState getDuckStateEnum() {
 		return DuckState.fromOrdinal(this.entityData.get(DATA_DUCK_STATE));
 	}
@@ -214,6 +227,7 @@ public class Duck extends PathfinderMob {
 			case HUNGRY -> "Hungry";
 			case STRESSED -> "Stressed";
 			case DESTRESSING -> "Relaxing";
+			case LONELY -> "Lonely";
 			case DEFAULT -> "Cool";
 		};
 	}
@@ -228,6 +242,8 @@ public class Duck extends PathfinderMob {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.DESTRESSING.ordinal());
 		} else if (this.hungryGoal != null && this.hungryGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.HUNGRY.ordinal());
+		} else if (this.lonelyGoal != null && this.lonelyGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.LONELY.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
 		} else {
@@ -237,6 +253,10 @@ public class Duck extends PathfinderMob {
 
 	public void broadcastStressEvent() {
 		this.level().broadcastEntityEvent(this, EVENT_ID_STRESS);
+	}
+
+	public void broadcastLonelyEvent() {
+		this.level().broadcastEntityEvent(this, EVENT_ID_LONELY);
 	}
 
 	public ItemStack getRandomNestDrop() {
@@ -249,6 +269,7 @@ public class Duck extends PathfinderMob {
 	private HungryGoal hungryGoal;
 	private StressGoal stressGoal;
 	private DestressGoal destressGoal;
+	private LonelyGoal lonelyGoal;
 	private NestGoal nestGoal;
 	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
 
@@ -271,6 +292,9 @@ public class Duck extends PathfinderMob {
 
 		destressGoal = new DestressGoal(this);
 		this.goalSelector.addGoal(2, destressGoal);
+
+		lonelyGoal = new LonelyGoal(this);
+		this.goalSelector.addGoal(2, lonelyGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(3, nestGoal);
@@ -345,6 +369,9 @@ public class Duck extends PathfinderMob {
 			addParticlesAroundSelf(ParticleTypes.HEART);
 		} else if (id == EVENT_ID_STRESS) {
 			addParticlesAroundSelf(ParticleTypes.SPLASH);
+		} else if (id == EVENT_ID_LONELY) {
+			// Sad smoke particles for lonely ducks
+			addParticlesAroundSelf(ParticleTypes.SMOKE);
 		} else {
 			super.handleEntityEvent(id);
 		}
