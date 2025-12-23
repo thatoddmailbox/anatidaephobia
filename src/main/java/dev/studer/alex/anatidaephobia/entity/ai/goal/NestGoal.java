@@ -8,10 +8,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+
+import java.util.EnumSet;
 
 public class NestGoal extends MoveToBlockGoal {
 	private static final int NEST_DURATION = 2 * Anatidaephobia.TICKS_PER_SECOND;
@@ -25,8 +28,10 @@ public class NestGoal extends MoveToBlockGoal {
 	protected boolean isRunning;
 
 	public NestGoal(Duck duck, double speedModifier, int searchRange) {
-		super(duck, speedModifier, searchRange);
+		// TODO: I think we should ditch MoveToBlockGoal
+		super(duck, speedModifier, searchRange, 8);
 		this.duck = duck;
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE));
 	}
 
 	public boolean isRunning() {
@@ -145,10 +150,7 @@ public class NestGoal extends MoveToBlockGoal {
 
 	@Override
 	protected boolean isValidTarget(LevelReader level, BlockPos pos) {
-		// Only nest on hay bales with air above
-		boolean isHay = level.getBlockState(pos).is(Blocks.HAY_BLOCK) &&
-				level.getBlockState(pos.above()).isAir();
-		if (!isHay) {
+		if (!DuckNestManager.isCentralBlockOfValidNest(level, pos)) {
 			return false;
 		}
 

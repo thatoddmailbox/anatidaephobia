@@ -3,12 +3,46 @@ package dev.studer.alex.anatidaephobia;
 import com.mojang.logging.LogUtils;
 import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class DuckNestManager {
 	private static HashMap<UUID, BlockPos> claimedNests = new HashMap<>();
+
+	public static boolean isCentralBlockOfValidNest(LevelReader level, BlockPos pos) {
+		// Basic requirements for a nest:
+		// * It has a central block (hay or lining)
+		// * It is a 3x3 flat and open space (each block has air above it).
+
+		boolean centralBlockValid = level.getBlockState(pos).is(Blocks.HAY_BLOCK) && level.getBlockState(pos.above()).isAir();
+		if (!centralBlockValid) {
+			return false;
+		}
+
+		// Check the whole 3x3 area, make sure that it's flat and open
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				BlockPos checkPos = pos.offset(dx, 0, dz);
+				// Each block in the 3x3 must be solid and have air above it
+				if (!level.getBlockState(checkPos).isSolid()) {
+					return false;
+				}
+				if (!level.getBlockState(checkPos.above()).isAir()) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public static int getNestQualityLevel(LevelReader level, BlockPos pos) {
+		// TODO: implement
+		return 1;
+	}
 
 	public static boolean isNestFree(BlockPos p, UUID self) {
 		return !claimedNests.containsValue(p) || (claimedNests.get(self) == p);
