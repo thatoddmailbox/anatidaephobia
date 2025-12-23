@@ -54,6 +54,9 @@ public class Duck extends PathfinderMob {
 	private static final EntityDataAccessor<String> DATA_DUCK_NAME = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.STRING);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_XP = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_LEVEL = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_DUCK_HUNGER = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_DUCK_STRESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_DUCK_LONELINESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 
 	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
@@ -79,6 +82,9 @@ public class Duck extends PathfinderMob {
 		output.putString("DuckName", getDuckName());
 		output.putInt("DuckXP", getDuckXP());
 		output.putInt("DuckLevel", getDuckLevel());
+		output.putInt("DuckHunger", getDuckHunger());
+		output.putInt("DuckStress", getDuckStress());
+		output.putInt("DuckLoneliness", getDuckLoneliness());
 	}
 
 	@Override
@@ -87,6 +93,9 @@ public class Duck extends PathfinderMob {
 		setDuckName(input.getStringOr("DuckName", "Confused Duck"));
 		setDuckXP(input.getIntOr("DuckXP", 0));
 		setDuckLevel(input.getIntOr("DuckLevel", 1));
+		setDuckHunger(input.getIntOr("DuckHunger", 0));
+		setDuckStress(input.getIntOr("DuckStress", 0));
+		setDuckLoneliness(input.getIntOr("DuckLoneliness", 0));
 	}
 
 	@Override
@@ -95,6 +104,9 @@ public class Duck extends PathfinderMob {
 		builder.define(DATA_DUCK_NAME, "");  // default empty string
 		builder.define(DATA_DUCK_XP, 0);
 		builder.define(DATA_DUCK_LEVEL, 1);
+		builder.define(DATA_DUCK_HUNGER, 0);
+		builder.define(DATA_DUCK_STRESS, 0);
+		builder.define(DATA_DUCK_LONELINESS, 0);
 	}
 
 	@Override
@@ -126,6 +138,30 @@ public class Duck extends PathfinderMob {
 
 	public void setDuckLevel(int level) {
 		this.entityData.set(DATA_DUCK_LEVEL, level);
+	}
+
+	public int getDuckHunger() {
+		return this.entityData.get(DATA_DUCK_HUNGER);
+	}
+
+	public void setDuckHunger(int hunger) {
+		this.entityData.set(DATA_DUCK_HUNGER, hunger);
+	}
+
+	public int getDuckStress() {
+		return this.entityData.get(DATA_DUCK_STRESS);
+	}
+
+	public void setDuckStress(int stress) {
+		this.entityData.set(DATA_DUCK_STRESS, stress);
+	}
+
+	public int getDuckLoneliness() {
+		return this.entityData.get(DATA_DUCK_LONELINESS);
+	}
+
+	public void setDuckLoneliness(int loneliness) {
+		this.entityData.set(DATA_DUCK_LONELINESS, loneliness);
 	}
 
 	private String getDuckState() {

@@ -55,9 +55,14 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		int xo = (this.width - this.imageWidth) / 2;
 		int yo = (this.height - this.imageHeight) / 2;
 
-		int duckLevel = getMenu().getDuck().getDuckLevel();
-		int duckXP = getMenu().getDuck().getDuckXP();
-		int duckMaxXP = 10;
+		Duck duck = getMenu().getDuck();
+
+		int duckLevel = duck.getDuckLevel();
+		int duckXP = duck.getDuckXP();
+		int duckMaxXP = 10; // TODO: leveling
+		int duckHunger = duck.getDuckHunger();
+		int duckStress = duck.getDuckStress();
+		int duckLoneliness = duck.getDuckLoneliness();
 
 		String duckLevelString = "Level " + duckLevel;
 		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 18, 0xff404040, false);
@@ -70,6 +75,11 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		float multiplier = ((float) xpBarWidth) / ((float) duckMaxXP);
 		int xpBarGreenW = Math.min(Mth.floor(multiplier * ((float) duckXP)), xpBarWidth);
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT, xpBarWidth, 5, 0, 0, xpBarX, xpBarY, xpBarGreenW, 5);
+
+		// TODO: make this look nicer
+		graphics.drawString(this.font, "Hunger: " + duckHunger, xo + 8, yo + 40, 0xff404040, false);
+		graphics.drawString(this.font, "Stress: " + duckStress, xo + 8, yo + 52, 0xff404040, false);
+		graphics.drawString(this.font, "Loneliness: " + duckLoneliness, xo + 8, yo + 64, 0xff404040, false);
 	}
 
 	@Override
