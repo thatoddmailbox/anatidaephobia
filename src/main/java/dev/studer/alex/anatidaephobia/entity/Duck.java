@@ -246,6 +246,25 @@ public class Duck extends PathfinderMob {
 		return 1; // default for any other duck food
 	}
 
+	private ItemStack getRandomNestDrop() {
+		int level = getDuckLevel();
+		float roll = this.random.nextFloat();
+
+		// TODO: these are placeholders, need to make some more items
+		return switch (level) {
+			case 1 -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
+			case 2 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
+					: new ItemStack(Items.FEATHER);
+			case 3 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
+					: new ItemStack(Items.BOOK);
+			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
+					: new ItemStack(Items.BOOK);
+			case 5 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
+					: new ItemStack(Items.DIAMOND);
+			default -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
+		};
+	}
+
 	private FloatGoal floatGoal;
 	private PanicGoal panicGoal;
 	private TemptGoal temptGoal;
@@ -500,7 +519,7 @@ public class Duck extends PathfinderMob {
 					// we did it
 
 					if (this.duck.level() instanceof ServerLevel) {
-						this.duck.spawnAtLocation((ServerLevel) this.duck.level(), new ItemStack(AnatidaephobiaItems.DUCK_EGG));
+						this.duck.spawnAtLocation((ServerLevel) this.duck.level(), this.duck.getRandomNestDrop());
 					}
 					this.duck.gameEvent(GameEvent.ENTITY_PLACE);
 
