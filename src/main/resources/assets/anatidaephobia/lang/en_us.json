@@ -4,5 +4,6 @@
 	"item.anatidaephobia.duck_spawn_egg": "Duck Spawn Egg",
 	"message.anatidaephobia.duck_hurt": "Let's hope that was a mistake.",
 	"message.anatidaephobia.duck_death": "The Pond remembers.",
-	"tag.item.anatidaephobia.duck_food": "Duck Food"
+	"tag.item.anatidaephobia.duck_food": "Duck Food",
+	"effect.anatidaephobia.bread_sickness": "Bread Sickness"
 }

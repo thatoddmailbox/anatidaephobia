@@ -3,6 +3,7 @@ package dev.studer.alex.anatidaephobia.entity;
 import com.mojang.logging.LogUtils;
 import dev.studer.alex.anatidaephobia.Anatidaephobia;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
+import dev.studer.alex.anatidaephobia.AnatidaephobiaMobEffects;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import net.minecraft.core.BlockPos;
@@ -18,6 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -186,6 +188,16 @@ public class Duck extends PathfinderMob {
 	public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
 		ItemStack itemStack = player.getItemInHand(hand);
 		if (itemStack.is(AnatidaephobiaItems.DUCK_FOOD)) {
+			if (itemStack.is(Items.BREAD)) {
+				// RIP duck - bread is harmful to ducks!
+				// Apply bread sickness effect for 20 seconds at amplifier 0
+				this.addEffect(new MobEffectInstance(
+						AnatidaephobiaMobEffects.BREAD_SICKNESS,
+						20 * Anatidaephobia.TICKS_PER_SECOND,
+						0
+				));
+			}
+
 			if (player instanceof ServerPlayer) {
 				ServerPlayer serverPlayer = (ServerPlayer) player;
 				serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
