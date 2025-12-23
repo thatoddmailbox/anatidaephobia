@@ -7,9 +7,9 @@ import dev.studer.alex.anatidaephobia.DuckNestManager;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
-import net.minecraft.core.particles.ParticleTypes;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -70,19 +70,13 @@ public class Duck extends PathfinderMob {
 	public Duck(EntityType<? extends PathfinderMob> entityType, Level level) {
 		super(entityType, level);
 
-		this.setDuckName(generateDuckName());
+		this.setDuckName(DuckProps.generateDuckName(this.getUUID().hashCode()));
 		this.setDuckXP(0);
 
 		// Make the nametag always visible
 		this.setCustomNameVisible(true);
 	}
 
-	private String generateDuckName() {
-		// Generate a name based on UUID to keep it consistent
-		String[] names = {"Quackers", "Waddles", "Donald", "Daffy", "Howard", "Mallard", "Puddles"};
-		int index = Math.abs(this.getUUID().hashCode()) % names.length;
-		return names[index];
-	}
 
 	@Override
 	protected void addAdditionalSaveData(ValueOutput output) {
@@ -143,36 +137,16 @@ public class Duck extends PathfinderMob {
 		// TODO: level up animation or effect?
 	}
 
-	// XP thresholds for each level (total XP required to reach that level)
-	private static final int[] LEVEL_XP_THRESHOLDS = {0, 10, 30, 70, 170};
-
-	public static int getMaxLevel() {
-		return LEVEL_XP_THRESHOLDS.length;
-	}
-
 	public int getDuckLevel() {
-		int xp = getDuckXP();
-		for (int level = LEVEL_XP_THRESHOLDS.length; level >= 1; level--) {
-			if (xp >= LEVEL_XP_THRESHOLDS[level - 1]) {
-				return level;
-			}
-		}
-		return 1;
+		return DuckProps.getLevelForXP(getDuckXP());
 	}
 
-	// Returns XP progress within the current level (0 to getLevelMaxXP()-1)
 	public int getLevelCurrentXP() {
-		int level = getDuckLevel();
-		return getDuckXP() - LEVEL_XP_THRESHOLDS[level - 1];
+		return DuckProps.getCurrentXPInLevel(getDuckXP());
 	}
 
-	// Returns XP needed to advance from current level to next (0 if max level)
 	public int getLevelMaxXP() {
-		int level = getDuckLevel();
-		if (level >= LEVEL_XP_THRESHOLDS.length) {
-			return 0; // Max level
-		}
-		return LEVEL_XP_THRESHOLDS[level] - LEVEL_XP_THRESHOLDS[level - 1];
+		return DuckProps.getMaxXPForLevel(getDuckLevel());
 	}
 
 	public int getDuckHunger() {
@@ -239,45 +213,8 @@ public class Duck extends PathfinderMob {
 		}
 	}
 
-	private int getValueOfFood(ItemStack itemStack) {
-		if (itemStack.is(Items.WHEAT_SEEDS) || itemStack.is(Items.MELON_SEEDS) ||
-				itemStack.is(Items.PUMPKIN_SEEDS) || itemStack.is(Items.BEETROOT_SEEDS) ||
-				itemStack.is(Items.TORCHFLOWER_SEEDS) || itemStack.is(Items.PITCHER_POD)) {
-			return 1; // seeds
-		} else if (itemStack.is(Items.SEAGRASS)) {
-			return 1;
-		} else if (itemStack.is(Items.KELP) || itemStack.is(Items.DRIED_KELP)) {
-			return 2;
-		} else if (itemStack.is(Items.BEETROOT)) {
-			return 2; // TODO: but they don't like it so much
-		} else if (itemStack.is(Items.SWEET_BERRIES)) {
-			return 3;
-		} else if (itemStack.is(Items.MELON_SLICE)) {
-			return 4;
-		} else if (itemStack.is(Items.GLISTERING_MELON_SLICE)) {
-			return 6;
-		}
-
-		return 1; // default for any other duck food
-	}
-
 	public ItemStack getRandomNestDrop() {
-		int level = getDuckLevel();
-		float roll = this.random.nextFloat();
-
-		// TODO: these are placeholders, need to make some more items
-		return switch (level) {
-			case 1 -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
-			case 2 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.FEATHER);
-			case 3 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.BOOK);
-			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.BOOK);
-			case 5 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.DIAMOND);
-			default -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
-		};
+		return DuckProps.getRandomNestDrop(getDuckLevel(), this.random);
 	}
 
 	private FloatGoal floatGoal;
@@ -403,7 +340,7 @@ public class Duck extends PathfinderMob {
 				this.level().broadcastEntityEvent(this, EVENT_ID_LOVE);
 
 				if (!isBread) {
-					reduceDuckHunger(getValueOfFood(itemStack));
+					reduceDuckHunger(DuckProps.getValueOfFood(itemStack));
 				}
 
 				return InteractionResult.SUCCESS_SERVER;

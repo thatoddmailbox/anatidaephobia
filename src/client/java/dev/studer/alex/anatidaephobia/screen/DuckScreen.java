@@ -1,6 +1,7 @@
 package dev.studer.alex.anatidaephobia.screen;
 
 import dev.studer.alex.anatidaephobia.entity.Duck;
+import dev.studer.alex.anatidaephobia.entity.DuckProps;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -64,7 +65,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		int duckStress = duck.getDuckStress();
 		int duckLoneliness = duck.getDuckLoneliness();
 
-		String duckLevelString = "Level " + duckLevel + (duckLevel >= Duck.getMaxLevel() ? " (max level!)" : "");
+		String duckLevelString = "Level " + duckLevel + (duckLevel >= DuckProps.getMaxLevel() ? " (max level!)" : "");
 		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 18, 0xff404040, false);
 
 		int xpBarWidth = 102;
