@@ -6,6 +6,7 @@ import dev.studer.alex.anatidaephobia.DuckNestManager;
 import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelReader;
@@ -78,6 +79,7 @@ public class NestGoal extends MoveToBlockGoal {
 				this.duck.gameEvent(GameEvent.ENTITY_PLACE);
 
 				this.duck.addDuckXP(1);
+				this.duck.addDuckStress(Mth.ceil(this.duck.getDuckLevel() / 2.0f));
 
 				nesting = false;
 				nestingTicks = 0;

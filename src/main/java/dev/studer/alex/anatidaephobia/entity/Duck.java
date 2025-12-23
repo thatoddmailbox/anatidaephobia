@@ -6,9 +6,11 @@ import dev.studer.alex.anatidaephobia.AnatidaephobiaMobEffects;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
+import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -41,13 +43,15 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
+	private byte EVENT_ID_STRESS = 101;
 
 	// Duck state enum - synced to client via DATA_DUCK_STATE
 	public enum DuckState {
 		DEFAULT,
 		SCARED,
 		NESTING,
-		HUNGRY;
+		HUNGRY,
+		STRESSED;
 
 		public static DuckState fromOrdinal(int ordinal) {
 			DuckState[] values = values();
@@ -175,6 +179,16 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_STRESS, stress);
 	}
 
+	public void addDuckStress(int delta) {
+		int newStress = Math.min(getDuckStress() + delta, 10);
+		setDuckStress(newStress);
+	}
+
+	public void reduceDuckStress(int delta) {
+		int newStress = Math.max(getDuckStress() - delta, 0);
+		setDuckStress(newStress);
+	}
+
 	public int getDuckLoneliness() {
 		return this.entityData.get(DATA_DUCK_LONELINESS);
 	}
@@ -196,6 +210,7 @@ public class Duck extends PathfinderMob {
 			case SCARED -> "Scared";
 			case NESTING -> "Nesting";
 			case HUNGRY -> "Hungry";
+			case STRESSED -> "Stressed";
 			case DEFAULT -> "Cool";
 		};
 	}
@@ -204,6 +219,8 @@ public class Duck extends PathfinderMob {
 	private void updateDuckState() {
 		if (this.panicGoal != null && this.panicGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.SCARED.ordinal());
+		} else if (this.stressGoal != null && this.stressGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.STRESSED.ordinal());
 		} else if (this.hungryGoal != null && this.hungryGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.HUNGRY.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
@@ -211,6 +228,10 @@ public class Duck extends PathfinderMob {
 		} else {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.DEFAULT.ordinal());
 		}
+	}
+
+	public void broadcastStressEvent() {
+		this.level().broadcastEntityEvent(this, EVENT_ID_STRESS);
 	}
 
 	public ItemStack getRandomNestDrop() {
@@ -221,6 +242,7 @@ public class Duck extends PathfinderMob {
 	private PanicGoal panicGoal;
 	private TemptGoal temptGoal;
 	private HungryGoal hungryGoal;
+	private StressGoal stressGoal;
 	private NestGoal nestGoal;
 	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
 
@@ -237,6 +259,9 @@ public class Duck extends PathfinderMob {
 
 		hungryGoal = new HungryGoal(this);
 		this.goalSelector.addGoal(2, hungryGoal);
+
+		stressGoal = new StressGoal(this);
+		this.goalSelector.addGoal(2, stressGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(3, nestGoal);
@@ -269,6 +294,12 @@ public class Duck extends PathfinderMob {
 					hungerAccum -= 4.0f;
 					addDuckHunger(1);
 				}
+
+				if (this.panicGoal.isRunning()) {
+					// PanicGoal runs for ~40 ticks, since that's how long getLastDamageSource lasts.
+					// So this will usually be 2 but it sort of makes sense that the more they run the more stressed they get
+					addDuckStress(1);
+				}
 			}
 		}
 	}
@@ -290,15 +321,21 @@ public class Duck extends PathfinderMob {
 		return false;
 	}
 
+	protected void addParticlesAroundSelf(final ParticleOptions particle) {
+		for (int i = 0; i < 7; ++i) {
+			double xa = this.random.nextGaussian() * 0.02;
+			double ya = this.random.nextGaussian() * 0.02;
+			double za = this.random.nextGaussian() * 0.02;
+			this.level().addParticle(particle, this.getRandomX((double)1.0F), this.getRandomY() + (double)1.0F, this.getRandomZ((double)1.0F), xa, ya, za);
+		}
+	}
+
 	@Override
 	public void handleEntityEvent(final byte id) {
 		if (id == EVENT_ID_LOVE) {
-			for (int i = 0; i < 7; ++i) {
-				double xa = this.random.nextGaussian() * 0.02;
-				double ya = this.random.nextGaussian() * 0.02;
-				double za = this.random.nextGaussian() * 0.02;
-				this.level().addParticle(ParticleTypes.HEART, this.getRandomX((double)1.0F), this.getRandomY() + (double)0.5F, this.getRandomZ((double)1.0F), xa, ya, za);
-			}
+			addParticlesAroundSelf(ParticleTypes.HEART);
+		} else if (id == EVENT_ID_STRESS) {
+			addParticlesAroundSelf(ParticleTypes.SPLASH);
 		} else {
 			super.handleEntityEvent(id);
 		}
