@@ -83,10 +83,10 @@ public final class DuckProps {
 					: new ItemStack(Items.FEATHER);
 			case 3 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
 					: new ItemStack(Items.BOOK);
-			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.BOOK);
-			case 5 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.DIAMOND);
+			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
+					: new ItemStack(AnatidaephobiaItems.DUCK_EGG);
+			case 5 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
+					: new ItemStack(AnatidaephobiaItems.DUCK_EGG);
 			default -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
 		};
 	}
