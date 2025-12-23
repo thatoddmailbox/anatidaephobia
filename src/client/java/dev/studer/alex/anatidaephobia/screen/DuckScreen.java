@@ -58,8 +58,8 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		Duck duck = getMenu().getDuck();
 
 		int duckLevel = duck.getDuckLevel();
-		int duckXP = duck.getDuckXP();
-		int duckMaxXP = 10; // TODO: leveling
+		int levelCurrentXP = duck.getLevelCurrentXP();
+		int levelMaxXP = duck.getLevelMaxXP();
 		int duckHunger = duck.getDuckHunger();
 		int duckStress = duck.getDuckStress();
 		int duckLoneliness = duck.getDuckLoneliness();
@@ -72,8 +72,14 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		int xpBarY = yo + 30;
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND, xpBarX, xpBarY, xpBarWidth, 5);
-		float multiplier = ((float) xpBarWidth) / ((float) duckMaxXP);
-		int xpBarGreenW = Math.min(Mth.floor(multiplier * ((float) duckXP)), xpBarWidth);
+		int xpBarGreenW;
+		if (levelMaxXP > 0) {
+			float multiplier = ((float) xpBarWidth) / ((float) levelMaxXP);
+			xpBarGreenW = Math.min(Mth.floor(multiplier * ((float) levelCurrentXP)), xpBarWidth);
+		} else {
+			// Max level - show full bar
+			xpBarGreenW = xpBarWidth;
+		}
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT, xpBarWidth, 5, 0, 0, xpBarX, xpBarY, xpBarGreenW, 5);
 
 		// TODO: make this look nicer

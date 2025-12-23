@@ -53,7 +53,6 @@ public class Duck extends PathfinderMob {
 
 	private static final EntityDataAccessor<String> DATA_DUCK_NAME = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.STRING);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_XP = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> DATA_DUCK_LEVEL = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_HUNGER = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_STRESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> DATA_DUCK_LONELINESS = SynchedEntityData.defineId(Duck.class, EntityDataSerializers.INT);
@@ -63,7 +62,6 @@ public class Duck extends PathfinderMob {
 
 		this.setDuckName(generateDuckName());
 		this.setDuckXP(0);
-		this.setDuckLevel(1);
 
 		// Make the nametag always visible
 		this.setCustomNameVisible(true);
@@ -81,7 +79,6 @@ public class Duck extends PathfinderMob {
 		super.addAdditionalSaveData(output);  // Always call super first!
 		output.putString("DuckName", getDuckName());
 		output.putInt("DuckXP", getDuckXP());
-		output.putInt("DuckLevel", getDuckLevel());
 		output.putInt("DuckHunger", getDuckHunger());
 		output.putInt("DuckStress", getDuckStress());
 		output.putInt("DuckLoneliness", getDuckLoneliness());
@@ -92,7 +89,6 @@ public class Duck extends PathfinderMob {
 		super.readAdditionalSaveData(input);  // Always call super first!
 		setDuckName(input.getStringOr("DuckName", "Confused Duck"));
 		setDuckXP(input.getIntOr("DuckXP", 0));
-		setDuckLevel(input.getIntOr("DuckLevel", 1));
 		setDuckHunger(input.getIntOr("DuckHunger", 0));
 		setDuckStress(input.getIntOr("DuckStress", 0));
 		setDuckLoneliness(input.getIntOr("DuckLoneliness", 0));
@@ -103,7 +99,6 @@ public class Duck extends PathfinderMob {
 		super.defineSynchedData(builder);
 		builder.define(DATA_DUCK_NAME, "");  // default empty string
 		builder.define(DATA_DUCK_XP, 0);
-		builder.define(DATA_DUCK_LEVEL, 1);
 		builder.define(DATA_DUCK_HUNGER, 0);
 		builder.define(DATA_DUCK_STRESS, 0);
 		builder.define(DATA_DUCK_LONELINESS, 0);
@@ -132,12 +127,36 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_XP, xp);
 	}
 
-	public int getDuckLevel() {
-		return this.entityData.get(DATA_DUCK_LEVEL);
+	// XP thresholds for each level (total XP required to reach that level)
+	private static final int[] LEVEL_XP_THRESHOLDS = {0, 10, 30, 70, 170};
+
+	public static int getMaxLevel() {
+		return LEVEL_XP_THRESHOLDS.length;
 	}
 
-	public void setDuckLevel(int level) {
-		this.entityData.set(DATA_DUCK_LEVEL, level);
+	public int getDuckLevel() {
+		int xp = getDuckXP();
+		for (int level = LEVEL_XP_THRESHOLDS.length; level >= 1; level--) {
+			if (xp >= LEVEL_XP_THRESHOLDS[level - 1]) {
+				return level;
+			}
+		}
+		return 1;
+	}
+
+	// Returns XP progress within the current level (0 to getLevelMaxXP()-1)
+	public int getLevelCurrentXP() {
+		int level = getDuckLevel();
+		return getDuckXP() - LEVEL_XP_THRESHOLDS[level - 1];
+	}
+
+	// Returns XP needed to advance from current level to next (0 if max level)
+	public int getLevelMaxXP() {
+		int level = getDuckLevel();
+		if (level >= LEVEL_XP_THRESHOLDS.length) {
+			return 0; // Max level
+		}
+		return LEVEL_XP_THRESHOLDS[level] - LEVEL_XP_THRESHOLDS[level - 1];
 	}
 
 	public int getDuckHunger() {
