@@ -4,6 +4,7 @@ import dev.studer.alex.anatidaephobia.Anatidaephobia;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaMobEffects;
 import dev.studer.alex.anatidaephobia.DuckNestManager;
+import dev.studer.alex.anatidaephobia.entity.ai.goal.DestressGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.HungryGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.NestGoal;
 import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
@@ -51,7 +52,8 @@ public class Duck extends PathfinderMob {
 		SCARED,
 		NESTING,
 		HUNGRY,
-		STRESSED;
+		STRESSED,
+		DESTRESSING;
 
 		public static DuckState fromOrdinal(int ordinal) {
 			DuckState[] values = values();
@@ -211,6 +213,7 @@ public class Duck extends PathfinderMob {
 			case NESTING -> "Nesting";
 			case HUNGRY -> "Hungry";
 			case STRESSED -> "Stressed";
+			case DESTRESSING -> "Swimming";
 			case DEFAULT -> "Cool";
 		};
 	}
@@ -221,6 +224,8 @@ public class Duck extends PathfinderMob {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.SCARED.ordinal());
 		} else if (this.stressGoal != null && this.stressGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.STRESSED.ordinal());
+		} else if (this.destressGoal != null && this.destressGoal.isRunning()) {
+			this.entityData.set(DATA_DUCK_STATE, DuckState.DESTRESSING.ordinal());
 		} else if (this.hungryGoal != null && this.hungryGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.HUNGRY.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
@@ -243,6 +248,7 @@ public class Duck extends PathfinderMob {
 	private TemptGoal temptGoal;
 	private HungryGoal hungryGoal;
 	private StressGoal stressGoal;
+	private DestressGoal destressGoal;
 	private NestGoal nestGoal;
 	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
 
@@ -262,6 +268,9 @@ public class Duck extends PathfinderMob {
 
 		stressGoal = new StressGoal(this);
 		this.goalSelector.addGoal(2, stressGoal);
+
+		destressGoal = new DestressGoal(this);
+		this.goalSelector.addGoal(2, destressGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(3, nestGoal);
