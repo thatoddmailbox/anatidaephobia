@@ -8,20 +8,33 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayDeque;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 
 public class DestressGoal extends Goal {
 	private static final int STRESS_THRESHOLD = 3;
 	private static final int SEARCH_RANGE = 16;
+	private static final int MIN_WATER_AREA = 16;
 	private static final double SPEED_MODIFIER = 1.0;
 	private static final int DESTRESS_INTERVAL = 3 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int MIN_SWIM_DURATION = 5 * Anatidaephobia.TICKS_PER_SECOND;
+	private static final int NAVIGATION_TIMEOUT = 10 * Anatidaephobia.TICKS_PER_SECOND;
+	private static final int WATER_VALIDATION_INTERVAL = 2 * Anatidaephobia.TICKS_PER_SECOND;
 
 	private final Duck duck;
 	private boolean isRunning;
 	private BlockPos targetWaterPos;
 	private int ticksInWater;
 	private int ticksRunning;
+	private int ticksNavigating;
+
+	// Cache for water body validation to avoid expensive flood-fill every tick
+	private BlockPos lastValidatedPos;
+	private long lastValidationTick;
+	private boolean lastValidationResult;
 
 	public DestressGoal(Duck duck) {
 		this.duck = duck;
@@ -39,17 +52,41 @@ public class DestressGoal extends Goal {
 		}
 
 		if (duck.isInWater()) {
-			return true;
+			// Verify the water body is large enough (using cache)
+			return isWaterBodyValid(duck.blockPosition());
 		}
 
 		// Try to find nearby water
 		return findNearestWater();
 	}
 
+	/**
+	 * Checks if a position is in a valid (large enough) water body.
+	 * Results are cached to avoid expensive flood-fill every tick.
+	 */
+	private boolean isWaterBodyValid(BlockPos pos) {
+		long currentTick = duck.level().getGameTime();
+
+		// Use cache if position is the same and cache is fresh
+		if (pos.equals(lastValidatedPos) &&
+			(currentTick - lastValidationTick) < WATER_VALIDATION_INTERVAL) {
+			return lastValidationResult;
+		}
+
+		// Revalidate
+		Set<BlockPos> waterBody = getWaterBodySize(pos);
+		lastValidatedPos = pos.immutable();
+		lastValidationTick = currentTick;
+		lastValidationResult = waterBody.size() >= MIN_WATER_AREA;
+
+		return lastValidationResult;
+	}
+
 	private boolean findNearestWater() {
 		BlockPos duckPos = duck.blockPosition();
 		BlockPos bestPos = null;
 		double bestDistSq = Double.MAX_VALUE;
+		Set<BlockPos> checkedWaterBodies = new HashSet<>();
 
 		for (BlockPos pos : BlockPos.withinManhattan(duckPos, SEARCH_RANGE, SEARCH_RANGE / 2, SEARCH_RANGE)) {
 			if (pos.getX() == duckPos.getX() && pos.getZ() == duckPos.getZ()) {
@@ -61,10 +98,21 @@ public class DestressGoal extends Goal {
 
 			// Look for water with air above (so duck can swim on surface)
 			if (state.is(Blocks.WATER) && aboveState.isAir()) {
-				double distSq = pos.distSqr(duckPos);
-				if (distSq < bestDistSq) {
-					bestDistSq = distSq;
-					bestPos = pos.immutable();
+				// Skip if we've already checked this water body
+				if (checkedWaterBodies.contains(pos)) {
+					continue;
+				}
+
+				// Check if water body is large enough
+				Set<BlockPos> waterBody = getWaterBodySize(pos);
+				checkedWaterBodies.addAll(waterBody);
+
+				if (waterBody.size() >= MIN_WATER_AREA) {
+					double distSq = pos.distSqr(duckPos);
+					if (distSq < bestDistSq) {
+						bestDistSq = distSq;
+						bestPos = pos.immutable();
+					}
 				}
 			}
 		}
@@ -77,21 +125,74 @@ public class DestressGoal extends Goal {
 		return false;
 	}
 
+	/**
+	 * Uses flood-fill to find all connected surface water blocks (water with air above).
+	 * Returns early once MIN_WATER_AREA is reached for efficiency.
+	 */
+	private Set<BlockPos> getWaterBodySize(BlockPos start) {
+		Set<BlockPos> visited = new HashSet<>();
+		Queue<BlockPos> queue = new ArrayDeque<>();
+		queue.add(start);
+		visited.add(start);
+
+		while (!queue.isEmpty() && visited.size() < MIN_WATER_AREA) {
+			BlockPos current = queue.poll();
+
+			// Check all 4 horizontal neighbors
+			for (BlockPos neighbor : new BlockPos[]{
+				current.north(), current.south(), current.east(), current.west()
+			}) {
+				if (visited.contains(neighbor)) {
+					continue;
+				}
+
+				BlockState state = duck.level().getBlockState(neighbor);
+				BlockState aboveState = duck.level().getBlockState(neighbor.above());
+
+				// Only count surface water (water with air above)
+				if (state.is(Blocks.WATER) && aboveState.isAir()) {
+					visited.add(neighbor);
+					queue.add(neighbor);
+				}
+			}
+		}
+
+		return visited;
+	}
+
 	@Override
 	public boolean canContinueToUse() {
-		// Continue while stressed and either:
-		// - Still navigating to water
-		// - Swimming in water (for minimum duration or until stress is gone)
+		// Stop if no longer stressed
 		if (duck.getDuckStress() <= 0) {
 			return false;
 		}
 
 		if (duck.isInWater()) {
+			// Periodically verify water body is still valid (e.g., player didn't drain it)
+			if (!isWaterBodyValid(duck.blockPosition())) {
+				return false;
+			}
 			// Stay in water for minimum duration or until fully destressed
 			return ticksInWater < MIN_SWIM_DURATION || duck.getDuckStress() > 0;
 		}
 
-		// Still trying to reach water
+		// Not in water - check navigation timeout
+		if (ticksNavigating >= NAVIGATION_TIMEOUT) {
+			return false;
+		}
+
+		// Check if target water still exists (quick check, not full validation)
+		if (targetWaterPos != null) {
+			BlockState state = duck.level().getBlockState(targetWaterPos);
+			if (!state.is(Blocks.WATER)) {
+				// Water was removed, try to find new water
+				if (!findNearestWater()) {
+					return false;
+				}
+			}
+		}
+
+		// Continue if still navigating or can find new water
 		return !duck.getNavigation().isDone() || findNearestWater();
 	}
 
@@ -100,6 +201,7 @@ public class DestressGoal extends Goal {
 		isRunning = true;
 		ticksInWater = 0;
 		ticksRunning = 0;
+		ticksNavigating = 0;
 
 		if (!duck.isInWater() && targetWaterPos != null) {
 			duck.getNavigation().moveTo(
@@ -116,8 +218,14 @@ public class DestressGoal extends Goal {
 		isRunning = false;
 		ticksInWater = 0;
 		ticksRunning = 0;
+		ticksNavigating = 0;
 		targetWaterPos = null;
 		duck.getNavigation().stop();
+
+		// Clear validation cache
+		lastValidatedPos = null;
+		lastValidationTick = 0;
+		lastValidationResult = false;
 	}
 
 	@Override
@@ -126,6 +234,7 @@ public class DestressGoal extends Goal {
 
 		if (duck.isInWater()) {
 			ticksInWater++;
+			ticksNavigating = 0; // Reset navigation timer when in water
 
 			// Reduce stress periodically while swimming
 			if (ticksInWater % DESTRESS_INTERVAL == 0) {
@@ -137,6 +246,8 @@ public class DestressGoal extends Goal {
 				swimRandomly();
 			}
 		} else {
+			ticksNavigating++;
+
 			// Not in water yet, keep trying to reach it
 			if (duck.getNavigation().isDone() && targetWaterPos != null) {
 				// Recalculate path if we got stuck

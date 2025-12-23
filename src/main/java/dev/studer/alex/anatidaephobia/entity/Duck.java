@@ -213,7 +213,7 @@ public class Duck extends PathfinderMob {
 			case NESTING -> "Nesting";
 			case HUNGRY -> "Hungry";
 			case STRESSED -> "Stressed";
-			case DESTRESSING -> "Swimming";
+			case DESTRESSING -> "Relaxing";
 			case DEFAULT -> "Cool";
 		};
 	}
