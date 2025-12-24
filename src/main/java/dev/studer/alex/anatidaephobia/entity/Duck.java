@@ -13,6 +13,7 @@ import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,15 +36,22 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
@@ -322,7 +331,7 @@ public class Duck extends PathfinderMob {
 	private LonelyGoal lonelyGoal;
 	private SocializeGoal socializeGoal;
 	private NestGoal nestGoal;
-	private WaterAvoidingRandomStrollGoal waterAvoidingRandomStrollGoal;
+	private RandomStrollGoal randomStrollGoal;
 
 	@Override
 	protected void registerGoals() {
@@ -354,8 +363,8 @@ public class Duck extends PathfinderMob {
 		nestGoal = new NestGoal(this, 1.0, 16);
 		this.goalSelector.addGoal(5, nestGoal);
 
-		waterAvoidingRandomStrollGoal = new WaterAvoidingRandomStrollGoal(this, 1.0);
-		this.goalSelector.addGoal(6, waterAvoidingRandomStrollGoal);
+		randomStrollGoal = new RandomStrollGoal(this, 1.0);
+		this.goalSelector.addGoal(6,randomStrollGoal);
 	}
 
 	private float hungerAccum = 0;
@@ -390,6 +399,11 @@ public class Duck extends PathfinderMob {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected PathNavigation createNavigation(Level level) {
+		return new DuckPathNavigation(this, level);
 	}
 
 	@Override
@@ -628,4 +642,23 @@ public class Duck extends PathfinderMob {
 				.add(Attributes.FOLLOW_RANGE, 32.0);
 	}
 
+	private static class DuckPathNavigation extends GroundPathNavigation {
+		DuckPathNavigation(Duck duck, Level level) {
+			super(duck, level);
+		}
+
+		@Override
+		protected boolean hasValidPathType(PathType pathType) {
+			// Treat water as valid walkable surface
+			return pathType == PathType.WATER || pathType == PathType.WATER_BORDER
+					|| super.hasValidPathType(pathType);
+		}
+
+		@Override
+		public boolean isStableDestination(BlockPos pos) {
+			// Water blocks are stable destinations for ducks
+			return this.level.getBlockState(pos).is(Blocks.WATER)
+					|| super.isStableDestination(pos);
+		}
+	}
 }
