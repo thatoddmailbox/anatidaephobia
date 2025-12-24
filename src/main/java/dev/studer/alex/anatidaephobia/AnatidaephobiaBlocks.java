@@ -1,0 +1,53 @@
+package dev.studer.alex.anatidaephobia;
+
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+
+import java.util.function.Function;
+
+public class AnatidaephobiaBlocks {
+	public static final Block QUACKMIUM_BLOCK = register(
+			"quackmium_block",
+			Block::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.METAL)
+					.requiresCorrectToolForDrops()
+					.strength(5.0F, 6.0F)
+					.sound(SoundType.METAL)
+	);
+
+	public static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties properties) {
+		// Create the block key
+		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, name));
+
+		// Create the block instance
+		Block block = blockFactory.apply(properties.setId(blockKey));
+
+		// Register the block
+		Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
+
+		// Create and register the block item
+		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, name));
+		BlockItem blockItem = new BlockItem(block, new Item.Properties().setId(itemKey));
+		Registry.register(BuiltInRegistries.ITEM, itemKey, blockItem);
+
+		return block;
+	}
+
+	public static void init() {
+		// Add quackmium block to Building Blocks creative tab
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS)
+				.register((itemGroup) -> itemGroup.accept(QUACKMIUM_BLOCK));
+	}
+}

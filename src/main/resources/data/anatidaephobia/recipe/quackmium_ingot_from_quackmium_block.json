@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "quackmium_ingot",
+  "ingredients": [
+    "anatidaephobia:quackmium_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "anatidaephobia:quackmium_ingot"
+  }
+}

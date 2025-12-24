@@ -25,6 +25,7 @@ public class Anatidaephobia implements ModInitializer {
 
 		AnatidaephobiaEntities.init();
 		AnatidaephobiaMenus.init();
+		AnatidaephobiaBlocks.init();
 		AnatidaephobiaItems.init();
 		AnatidaephobiaMobEffects.init();
 	}

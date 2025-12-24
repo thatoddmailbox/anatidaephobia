@@ -1,4 +1,5 @@
 {
+	"block.anatidaephobia.quackmium_block": "Block of Quackmium",
 	"effect.anatidaephobia.bread_sickness": "Bread Sickness",
 	"gui.anatidaephobia.duck": "Duck",
 	"item.anatidaephobia.duck_egg": "Duck Egg",
@@ -9,6 +10,7 @@
 	"item.anatidaephobia.quackmium_chestplate": "Quackmium Chestplate",
 	"item.anatidaephobia.quackmium_leggings": "Quackmium Leggings",
 	"item.anatidaephobia.quackmium_boots": "Quackmium Boots",
+	"item.anatidaephobia.quackmium_block": "Block of Quackmium",
 	"message.anatidaephobia.duck_bread": "No! Ducks aren't supposed to eat bread...",
 	"message.anatidaephobia.duck_hurt": "Let's hope that was a mistake.",
 	"message.anatidaephobia.duck_death": "The Pond remembers.",
