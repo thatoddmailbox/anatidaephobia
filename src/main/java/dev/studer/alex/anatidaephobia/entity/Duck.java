@@ -337,25 +337,25 @@ public class Duck extends PathfinderMob {
 		this.goalSelector.addGoal(2, temptGoal);
 
 		hungryGoal = new HungryGoal(this);
-		this.goalSelector.addGoal(2, hungryGoal);
+		this.goalSelector.addGoal(3, hungryGoal);
 
 		stressGoal = new StressGoal(this);
-		this.goalSelector.addGoal(2, stressGoal);
+		this.goalSelector.addGoal(4, stressGoal);
 
 		destressGoal = new DestressGoal(this);
-		this.goalSelector.addGoal(2, destressGoal);
+		this.goalSelector.addGoal(3, destressGoal);
 
 		lonelyGoal = new LonelyGoal(this);
-		this.goalSelector.addGoal(2, lonelyGoal);
+		this.goalSelector.addGoal(4, lonelyGoal);
 
 		socializeGoal = new SocializeGoal(this);
-		this.goalSelector.addGoal(2, socializeGoal);
+		this.goalSelector.addGoal(3, socializeGoal);
 
 		nestGoal = new NestGoal(this, 1.0, 16);
-		this.goalSelector.addGoal(3, nestGoal);
+		this.goalSelector.addGoal(5, nestGoal);
 
 		waterAvoidingRandomStrollGoal = new WaterAvoidingRandomStrollGoal(this, 1.0);
-		this.goalSelector.addGoal(4, waterAvoidingRandomStrollGoal);
+		this.goalSelector.addGoal(6, waterAvoidingRandomStrollGoal);
 	}
 
 	private float hungerAccum = 0;
