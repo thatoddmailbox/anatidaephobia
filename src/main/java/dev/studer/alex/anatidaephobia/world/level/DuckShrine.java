@@ -1,5 +1,7 @@
-package dev.studer.alex.anatidaephobia;
+package dev.studer.alex.anatidaephobia.world.level;
 
+import dev.studer.alex.anatidaephobia.Anatidaephobia;
+import dev.studer.alex.anatidaephobia.world.level.saveddata.DuckShrineSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;

@@ -1,7 +1,7 @@
 package dev.studer.alex.anatidaephobia.mixin;
 
 import dev.studer.alex.anatidaephobia.AnatidaephobiaEntities;
-import dev.studer.alex.anatidaephobia.DuckShrine;
+import dev.studer.alex.anatidaephobia.world.level.DuckShrine;
 import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;

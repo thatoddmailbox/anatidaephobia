@@ -1,6 +1,7 @@
-package dev.studer.alex.anatidaephobia;
+package dev.studer.alex.anatidaephobia.world.level.saveddata;
 
 import com.mojang.serialization.Codec;
+import dev.studer.alex.anatidaephobia.Anatidaephobia;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
