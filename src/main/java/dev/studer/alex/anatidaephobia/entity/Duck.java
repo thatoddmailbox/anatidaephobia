@@ -473,13 +473,17 @@ public class Duck extends PathfinderMob {
 				));
 			}
 
+			if (!isBread && getDuckHunger() == 0) {
+				// Duck is full, don't try to eat
+				// (unless it's bread because they really like bread)
+				return InteractionResult.CONSUME;
+			}
+
 			if (player instanceof ServerPlayer) {
 				ServerPlayer serverPlayer = (ServerPlayer) player;
 
 				if (isBread) {
 					serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_bread"));
-				} else {
-					serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_hurt"));
 				}
 
 				this.usePlayerItem(player, hand, itemStack);
