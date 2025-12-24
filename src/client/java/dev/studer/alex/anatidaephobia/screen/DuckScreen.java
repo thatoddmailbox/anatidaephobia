@@ -16,9 +16,24 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 			Identifier.fromNamespaceAndPath("anatidaephobia",
 					"textures/gui/duck.png");
 
-	private static final Identifier EXPERIENCE_BAR_BACKGROUND = Identifier.withDefaultNamespace("container/villager/experience_bar_background");
-	private static final Identifier EXPERIENCE_BAR_CURRENT = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
-	private static final Identifier EXPERIENCE_BAR_RESULT = Identifier.withDefaultNamespace("container/villager/experience_bar_result");
+	private static final Identifier BAR_SHORT_BACKGROUND = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_short_background");
+	private static final Identifier BAR_SHORT_GOOD = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_short_good");
+
+	private static final Identifier BAR_BACKGROUND = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_background");
+	private static final Identifier BAR_GOOD = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_good");
+	private static final Identifier BAR_OK = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_ok");
+	private static final Identifier BAR_BAD = Identifier.fromNamespaceAndPath("anatidaephobia", "duck/bar_bad");
+
+	private int BAR_WIDTH = 160;
+	private int BAR_SHORT_WIDTH = 102;
+
+	private int LEFT_MARGIN = 7;
+
+	protected enum BarStyle {
+		GOOD,
+		OK,
+		BAD
+	};
 
 	public DuckScreen(DuckMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -49,6 +64,62 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		graphics.drawString(this.font, title, (this.imageWidth - font.width(title)) / 2, this.titleLabelY, 0xff404040, false);
 	}
 
+	protected void drawBar(final GuiGraphics graphics, int x, int y, int value, int max, boolean isShort, BarStyle bar) {
+		int effectiveWidth = isShort ? BAR_SHORT_WIDTH : BAR_WIDTH;
+
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, isShort ? BAR_SHORT_BACKGROUND : BAR_BACKGROUND, x, y, effectiveWidth, 5);
+
+		int fillW;
+		if (max > 0) {
+			float multiplier = ((float) effectiveWidth) / ((float) max);
+			fillW = Math.min(Mth.floor(multiplier * ((float) value)), effectiveWidth);
+		} else {
+			// Max level - show full bar
+			fillW = effectiveWidth;
+		}
+
+		graphics.blitSprite(
+				RenderPipelines.GUI_TEXTURED,
+				(isShort ? BAR_SHORT_GOOD : (bar == BarStyle.BAD ? BAR_BAD : bar == BarStyle.OK ? BAR_OK : BAR_GOOD)),
+				effectiveWidth,
+				5,
+				0,
+				0,
+				x,
+				y,
+				fillW,
+				5
+		);
+	}
+
+	protected void drawStat(final GuiGraphics graphics, int x, int y, String label, int value) {
+		// TODO: I suppose all of these strings should be translatable
+		String hint = switch (value) {
+			case 0 -> "None";
+			case 1, 2, 3 -> "Low";
+			case 4, 5, 6 -> "Medium";
+			case 7, 8, 9 -> "High";
+			case 10 -> "Very High";
+			default -> "Unknown";
+		};
+
+		BarStyle barStyle = switch (value) {
+			case 0, 1, 2, 3 -> BarStyle.GOOD;
+			case 4, 5, 6 -> BarStyle.OK;
+			case 7, 8, 9, 10 -> BarStyle.BAD;
+			default -> BarStyle.BAD;
+		};
+
+		// Draw stat name
+		graphics.drawString(this.font, label, x, y, 0xff404040, false);
+
+		// Draw stat hint
+		graphics.drawString(this.font, hint, x + BAR_WIDTH - font.width(hint), y, 0xff404040, false);
+
+		// Draw stat bar
+		drawBar(graphics, x, y + 12, value, 10, false, barStyle);
+	}
+
 	@Override
 	public void renderContents(final GuiGraphics graphics, final int mouseX, final int mouseY, final float a) {
 		super.renderContents(graphics, mouseX, mouseY, a);
@@ -68,25 +139,13 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		String duckLevelString = "Level " + duckLevel + (duckLevel >= DuckProps.getMaxLevel() ? " (max level!)" : "");
 		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 18, 0xff404040, false);
 
-		int xpBarWidth = 102;
-		int xpBarX = xo + ((this.imageWidth - xpBarWidth) / 2);
+		int xpBarX = xo + ((this.imageWidth - BAR_SHORT_WIDTH) / 2);
 		int xpBarY = yo + 30;
+		drawBar(graphics, xpBarX, xpBarY, levelCurrentXP, levelMaxXP, true, BarStyle.GOOD);
 
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND, xpBarX, xpBarY, xpBarWidth, 5);
-		int xpBarGreenW;
-		if (levelMaxXP > 0) {
-			float multiplier = ((float) xpBarWidth) / ((float) levelMaxXP);
-			xpBarGreenW = Math.min(Mth.floor(multiplier * ((float) levelCurrentXP)), xpBarWidth);
-		} else {
-			// Max level - show full bar
-			xpBarGreenW = xpBarWidth;
-		}
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT, xpBarWidth, 5, 0, 0, xpBarX, xpBarY, xpBarGreenW, 5);
-
-		// TODO: make this look nicer
-		graphics.drawString(this.font, "Hunger: " + duckHunger, xo + 8, yo + 40, 0xff404040, false);
-		graphics.drawString(this.font, "Stress: " + duckStress, xo + 8, yo + 52, 0xff404040, false);
-		graphics.drawString(this.font, "Loneliness: " + duckLoneliness, xo + 8, yo + 64, 0xff404040, false);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 50, "Hunger", duckHunger);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 50 + 32, "Stress", duckStress);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 50 + 32 + 32, "Loneliness", duckLoneliness);
 	}
 
 	@Override
