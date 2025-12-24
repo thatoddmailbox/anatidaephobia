@@ -7,21 +7,16 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 public class DuckShrine {
 	public static final TagKey<Block> DUCK_SHRINE_BORDER = TagKey.create(
 			Registries.BLOCK,
 			Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_shrine_border")
 	);
-
-	// Cooldown tracking: player UUID -> last summon time (game time)
-	private static final HashMap<UUID, Long> playerCooldowns = new HashMap<>();
 
 	// Cooldown duration in ticks (5 minutes = 6000 ticks)
 	private static final long COOLDOWN_TICKS = 5 * 60 * Anatidaephobia.TICKS_PER_SECOND;
@@ -85,41 +80,29 @@ public class DuckShrine {
 	 * Check if a player is on cooldown for summoning ducks.
 	 */
 	public static boolean isOnCooldown(ServerPlayer player) {
-		UUID playerId = player.getUUID();
-		if (!playerCooldowns.containsKey(playerId)) {
-			return false;
-		}
-
-		long lastSummon = playerCooldowns.get(playerId);
-		long currentTime = player.level().getGameTime();
-		return (currentTime - lastSummon) < COOLDOWN_TICKS;
+		ServerLevel level = (ServerLevel) player.level();
+		DuckShrineSavedData data = DuckShrineSavedData.get(level.getServer());
+		long currentTime = level.getGameTime();
+		return data.isOnCooldown(player.getUUID(), currentTime, COOLDOWN_TICKS);
 	}
 
 	/**
 	 * Get remaining cooldown time in seconds.
 	 */
 	public static int getRemainingCooldownSeconds(ServerPlayer player) {
-		UUID playerId = player.getUUID();
-		if (!playerCooldowns.containsKey(playerId)) {
-			return 0;
-		}
-
-		long lastSummon = playerCooldowns.get(playerId);
-		long currentTime = player.level().getGameTime();
-		long remainingTicks = COOLDOWN_TICKS - (currentTime - lastSummon);
-
-		if (remainingTicks <= 0) {
-			return 0;
-		}
-
-		return (int) (remainingTicks / Anatidaephobia.TICKS_PER_SECOND);
+		ServerLevel level = (ServerLevel) player.level();
+		DuckShrineSavedData data = DuckShrineSavedData.get(level.getServer());
+		long currentTime = level.getGameTime();
+		return data.getRemainingCooldownSeconds(player.getUUID(), currentTime, COOLDOWN_TICKS);
 	}
 
 	/**
 	 * Mark that a player has summoned a duck (starts cooldown).
 	 */
 	public static void markSummoned(ServerPlayer player) {
-		playerCooldowns.put(player.getUUID(), player.level().getGameTime());
+		ServerLevel level = (ServerLevel) player.level();
+		DuckShrineSavedData data = DuckShrineSavedData.get(level.getServer());
+		data.markSummoned(player.getUUID(), level.getGameTime());
 	}
 
 	/**
