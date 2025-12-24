@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "anatidaephobia:block/ducky_portal_ns"
+    },
+    "axis=z": {
+      "model": "anatidaephobia:block/ducky_portal_ew"
+    }
+  }
+}
