@@ -1,5 +1,6 @@
 package dev.studer.alex.anatidaephobia;
 
+import dev.studer.alex.anatidaephobia.network.AnatidaephobiaClientNetwork;
 import dev.studer.alex.anatidaephobia.screen.DuckScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -21,5 +22,7 @@ public class AnatidaephobiaClient implements ClientModInitializer {
 		EntityRenderers.register(AnatidaephobiaEntities.THROWN_DUCK_EGG, ThrownItemRenderer::new);
 
 		MenuScreens.register(AnatidaephobiaMenus.DUCK_MENU, DuckScreen::new);
+
+		AnatidaephobiaClientNetwork.init();
 	}
 }

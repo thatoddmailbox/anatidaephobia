@@ -2,11 +2,12 @@ package dev.studer.alex.anatidaephobia.world.level.portal;
 
 import com.mojang.serialization.MapCodec;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaBlocks;
+import dev.studer.alex.anatidaephobia.network.AnatidaephobiaNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -83,14 +84,17 @@ public class DuckyPortalBlock extends Block implements Portal {
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
                                 InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (entity.canUsePortal(false)) {
-            // For now, just send a message to players instead of teleporting
-            if (entity instanceof Player player && !level.isClientSide()) {
-                // Only trigger once when first entering
+            // Trigger the Ducky Win Screen for players
+            if (entity instanceof ServerPlayer player) {
+                // Only trigger once when first entering (cooldown prevents spam)
                 if (!player.isOnPortalCooldown()) {
-                    player.displayClientMessage(
-                            Component.literal("Quack! The Ducky Dimension awaits... (Coming soon!)"),
-                            true
-                    );
+                    // Send the win screen packet to the player
+                    player.unRide();
+                    player.level().removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
+                    // reuse the flag used for the End. this is a good idea that we will definitely not regret later
+                    player.wonGame = true;
+                    AnatidaephobiaNetwork.sendDuckyWin(player);
+
                     player.setPortalCooldown();
                 }
             }

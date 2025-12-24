@@ -1,5 +1,6 @@
 package dev.studer.alex.anatidaephobia;
 
+import dev.studer.alex.anatidaephobia.network.AnatidaephobiaNetwork;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -28,5 +29,6 @@ public class Anatidaephobia implements ModInitializer {
 		AnatidaephobiaBlocks.init();
 		AnatidaephobiaItems.init();
 		AnatidaephobiaMobEffects.init();
+		AnatidaephobiaNetwork.init();
 	}
 }
