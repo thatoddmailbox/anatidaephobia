@@ -22,6 +22,7 @@ public class AnatidaephobiaItems {
 	public static final Item QUACKMIUM_INGOT = register("quackmium_ingot", Item::new, new Item.Properties());
 
 	public static final TagKey<Item> DUCK_FOOD = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_food"));
+	public static final TagKey<Item> DUCK_INTERACTIVE = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_interactive"));
 
 	public static Item register(String name, Function<Item.Properties, Item> itemFactory, Item.Properties settings) {
 		// Create the item key.

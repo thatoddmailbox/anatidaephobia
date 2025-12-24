@@ -168,14 +168,24 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_HUNGER, hunger);
 	}
 
-	public void addDuckHunger(int delta) {
+	public boolean addDuckHunger(int delta) {
+		if (getDuckHunger() >= 10) {
+			return false;
+		}
+
 		int newHunger = Math.min(getDuckHunger() + delta, 10);
 		setDuckHunger(newHunger);
+		return true;
 	}
 
-	public void reduceDuckHunger(int delta) {
+	public boolean reduceDuckHunger(int delta) {
+		if (getDuckHunger() <= 0) {
+			return false;
+		}
+
 		int newHunger = Math.max(getDuckHunger() - delta, 0);
 		setDuckHunger(newHunger);
+		return true;
 	}
 
 	public int getDuckStress() {
@@ -186,14 +196,24 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_STRESS, stress);
 	}
 
-	public void addDuckStress(int delta) {
+	public boolean addDuckStress(int delta) {
+		if (getDuckStress() >= 10) {
+			return false;
+		}
+
 		int newStress = Math.min(getDuckStress() + delta, 10);
 		setDuckStress(newStress);
+		return true;
 	}
 
-	public void reduceDuckStress(int delta) {
+	public boolean reduceDuckStress(int delta) {
+		if (getDuckStress() <= 0) {
+			return false;
+		}
+
 		int newStress = Math.max(getDuckStress() - delta, 0);
 		setDuckStress(newStress);
+		return true;
 	}
 
 	public int getDuckLoneliness() {
@@ -204,14 +224,24 @@ public class Duck extends PathfinderMob {
 		this.entityData.set(DATA_DUCK_LONELINESS, loneliness);
 	}
 
-	public void addDuckLoneliness(int delta) {
+	public boolean addDuckLoneliness(int delta) {
+		if (getDuckLoneliness() >= 10) {
+			return false;
+		}
+
 		int newLoneliness = Math.min(getDuckLoneliness() + delta, 10);
 		setDuckLoneliness(newLoneliness);
+		return true;
 	}
 
-	public void reduceDuckLoneliness(int delta) {
+	public boolean reduceDuckLoneliness(int delta) {
+		if (getDuckLoneliness() <= 0) {
+			return false;
+		}
+
 		int newLoneliness = Math.max(getDuckLoneliness() - delta, 0);
 		setDuckLoneliness(newLoneliness);
+		return true;
 	}
 
 	// Socialize partner - used for mutual claiming in SocializeGoal
@@ -410,6 +440,7 @@ public class Duck extends PathfinderMob {
 	@Override
 	public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
 		ItemStack itemStack = player.getItemInHand(hand);
+
 		if (itemStack.is(AnatidaephobiaItems.DUCK_FOOD)) {
 			boolean isBread = false;
 			if (itemStack.is(Items.BREAD)) {
@@ -446,6 +477,53 @@ public class Duck extends PathfinderMob {
 			if (this.level().isClientSide()) {
 				return InteractionResult.CONSUME;
 			}
+		}
+
+		if (itemStack.is(AnatidaephobiaItems.DUCK_INTERACTIVE)) {
+			if (player instanceof ServerPlayer) {
+				if (itemStack.is(Items.ROTTEN_FLESH)) {
+					// increase hunger
+					if (!addDuckHunger(1)) {
+						return InteractionResult.FAIL;
+					}
+
+					this.usePlayerItem(player, hand, itemStack);
+				} else if (itemStack.is(Items.BRUSH)) {
+					// reduce stress
+					if (!reduceDuckStress(1)) {
+						return InteractionResult.FAIL;
+					}
+
+					itemStack.hurtAndBreak(16, player, hand.asEquipmentSlot());
+				} else if (itemStack.is(Items.SHEARS)) {
+					// increase stress
+					// TODO: react by panic?
+					if (!addDuckStress(1)) {
+						return InteractionResult.FAIL;
+					}
+
+					itemStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+				} else if (itemStack.is(Items.FEATHER)) {
+					// decrease loneliness
+					if (!reduceDuckLoneliness(1)) {
+						return InteractionResult.FAIL;
+					}
+
+					this.usePlayerItem(player, hand, itemStack);
+				} else if (itemStack.is(Items.STICK)) {
+					// increase loneliness
+					// TODO: react somehow? get poked?
+					if (!addDuckLoneliness(1)) {
+						return InteractionResult.FAIL;
+					}
+
+					this.usePlayerItem(player, hand, itemStack);
+				}
+
+				return InteractionResult.SUCCESS_SERVER;
+			}
+
+			return InteractionResult.CONSUME;
 		}
 
 		if (!this.level().isClientSide()) {
