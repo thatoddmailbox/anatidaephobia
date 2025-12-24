@@ -40,7 +40,11 @@ public class DuckNestManager {
 	}
 
 	public static int getNestQualityLevel(LevelReader level, BlockPos pos) {
-		// TODO: implement
+		// TODO: fully implement
+		if (level.getBlockState(pos).is(AnatidaephobiaBlocks.NEST_LINING)) {
+			return 2;
+		}
+
 		return 1;
 	}
 

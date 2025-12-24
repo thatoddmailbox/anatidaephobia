@@ -72,6 +72,7 @@ public class DuckEntityRenderer extends MobRenderer<Duck, DuckRenderState, DuckE
 		return switch (duck.getDuckStateEnum()) {
 			case SCARED -> "Scared";
 			case NESTING -> "Nesting";
+			case DISAPPOINTED -> "Disappointed";
 			case HUNGRY -> "Hungry";
 			case STRESSED -> "Stressed";
 			case DESTRESSING -> "Relaxing";

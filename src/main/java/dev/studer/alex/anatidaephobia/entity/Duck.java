@@ -54,6 +54,7 @@ public class Duck extends PathfinderMob {
 		DEFAULT,
 		SCARED,
 		NESTING,
+		DISAPPOINTED,
 		HUNGRY,
 		STRESSED,
 		DESTRESSING,
@@ -268,6 +269,7 @@ public class Duck extends PathfinderMob {
 		return switch (getDuckStateEnum()) {
 			case SCARED -> "Scared";
 			case NESTING -> "Nesting";
+			case DISAPPOINTED -> "Disappointed";
 			case HUNGRY -> "Hungry";
 			case STRESSED -> "Stressed";
 			case DESTRESSING -> "Relaxing";
@@ -292,7 +294,12 @@ public class Duck extends PathfinderMob {
 		} else if (this.socializeGoal != null && this.socializeGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.SOCIALIZING.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
-			this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
+			// Check if the nest goal is in disappointed state
+			if (this.nestGoal.getState() == NestGoal.State.DISAPPOINTED) {
+				this.entityData.set(DATA_DUCK_STATE, DuckState.DISAPPOINTED.ordinal());
+			} else {
+				this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
+			}
 		} else {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.DEFAULT.ordinal());
 		}
@@ -304,10 +311,6 @@ public class Duck extends PathfinderMob {
 
 	public void broadcastLonelyEvent() {
 		this.level().broadcastEntityEvent(this, EVENT_ID_LONELY);
-	}
-
-	public ItemStack getRandomNestDrop() {
-		return DuckProps.getRandomNestDrop(getDuckLevel(), this.random);
 	}
 
 	private FloatGoal floatGoal;
