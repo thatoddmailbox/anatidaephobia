@@ -439,6 +439,23 @@ public class Duck extends PathfinderMob {
 	}
 
 	@Override
+	public InteractionResult interact(final Player player, final InteractionHand hand) {
+		// Take over at this early point so we can block nametags
+		if (this.isAlive()) {
+			ItemStack itemStack = player.getItemInHand(hand);
+			if (itemStack.is(Items.NAME_TAG)) {
+				if (player instanceof ServerPlayer serverPlayer) {
+					serverPlayer.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_nametag"));
+				}
+
+				return InteractionResult.CONSUME;
+			}
+		}
+
+		return super.interact(player, hand);
+	}
+
+	@Override
 	public InteractionResult mobInteract(final Player player, final InteractionHand hand) {
 		ItemStack itemStack = player.getItemInHand(hand);
 
