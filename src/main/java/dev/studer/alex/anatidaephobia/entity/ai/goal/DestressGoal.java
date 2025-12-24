@@ -21,7 +21,7 @@ public class DestressGoal extends Goal {
 	private static final int SEARCH_RANGE = 16;
 	private static final int MIN_WATER_AREA = 16;
 	private static final double SPEED_MODIFIER = 1.0;
-	private static final int DESTRESS_INTERVAL = 3 * Anatidaephobia.TICKS_PER_SECOND;
+	private static final int DESTRESS_INTERVAL = 7 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int MIN_SWIM_DURATION = 5 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int NAVIGATION_TIMEOUT = 10 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int WATER_VALIDATION_INTERVAL = 2 * Anatidaephobia.TICKS_PER_SECOND;
@@ -62,8 +62,9 @@ public class DestressGoal extends Goal {
 		// Probabilistic triggering - gives other goals a chance to run
 		// At max stress, always try to find water. At lower levels, random chance.
 		if (stress < MAX_STRESS) {
-			// Probability increases with stress: ~12.5% at stress 3, up to 100% at stress 10
+			// Probability increases with stress: 6.25% at stress 3, up to 43.75% at stress 10
 			float probability = (stress - STRESS_THRESHOLD + 1) / (float)(MAX_STRESS - STRESS_THRESHOLD + 1);
+			probability /= 2;
 			if (duck.getRandom().nextFloat() >= probability) {
 				return false;
 			}
