@@ -83,9 +83,6 @@ public class Duck extends PathfinderMob {
 
 		this.setDuckName(DuckProps.generateDuckName(this.getUUID().hashCode()));
 		this.setDuckXP(0);
-
-		// Make the nametag always visible
-		this.setCustomNameVisible(true);
 	}
 
 
@@ -122,9 +119,9 @@ public class Duck extends PathfinderMob {
 
 	@Override
 	public Component getName() {
-		// Generate a dynamic nametag showing duck name + state
-		String state = getDuckState();
-		return Component.literal(getDuckName() + " [Level " + getDuckLevel() + "] [" + state + "]");
+		// Return just the duck's name for game systems (death messages, F3, etc.)
+		// The fancy multi-line nametag is handled by DuckEntityRenderer
+		return Component.literal(getDuckName());
 	}
 
 	public String getDuckName() {
