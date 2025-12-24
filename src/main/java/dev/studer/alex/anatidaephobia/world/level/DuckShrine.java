@@ -1,6 +1,7 @@
 package dev.studer.alex.anatidaephobia.world.level;
 
 import dev.studer.alex.anatidaephobia.Anatidaephobia;
+import dev.studer.alex.anatidaephobia.AnatidaephobiaBlocks;
 import dev.studer.alex.anatidaephobia.world.level.saveddata.DuckShrineSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,11 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DuckShrine {
-	public static final TagKey<Block> DUCK_SHRINE_BORDER = TagKey.create(
-			Registries.BLOCK,
-			Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_shrine_border")
-	);
-
 	// Cooldown duration in ticks (5 minutes = 6000 ticks)
 	private static final long COOLDOWN_TICKS = 5 * 60 * Anatidaephobia.TICKS_PER_SECOND;
 
@@ -69,7 +65,7 @@ public class DuckShrine {
 
 				BlockPos borderPos = center.offset(dx, 0, dz);
 				BlockState state = level.getBlockState(borderPos);
-				if (!state.is(DUCK_SHRINE_BORDER)) {
+				if (!state.is(AnatidaephobiaBlocks.DUCK_SHRINE_BORDER)) {
 					return false;
 				}
 			}

@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -52,6 +53,16 @@ public class AnatidaephobiaBlocks {
 					.lightLevel(state -> 11)
 					.noLootTable()
 					.pushReaction(PushReaction.BLOCK)
+	);
+
+	public static final TagKey<Block> DUCK_SHRINE_BORDER = TagKey.create(
+			Registries.BLOCK,
+			Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "duck_shrine_border")
+	);
+
+	public static final TagKey<Block> NEST_CENTER = TagKey.create(
+			Registries.BLOCK,
+			Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "nest_center")
 	);
 
 	public static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties properties) {

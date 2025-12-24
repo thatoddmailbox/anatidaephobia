@@ -17,7 +17,7 @@ public class DuckNestManager {
 		// * It has a central block (hay or lining)
 		// * It is a 3x3 flat and open space (each block has air above it).
 
-		boolean centralBlockValid = level.getBlockState(pos).is(Blocks.HAY_BLOCK) && level.getBlockState(pos.above()).isAir();
+		boolean centralBlockValid = level.getBlockState(pos).is(AnatidaephobiaBlocks.NEST_CENTER) && level.getBlockState(pos.above()).isAir();
 		if (!centralBlockValid) {
 			return false;
 		}
