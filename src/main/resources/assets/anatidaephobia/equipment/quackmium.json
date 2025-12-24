@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "anatidaephobia:quackmium"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "anatidaephobia:quackmium"
+			}
+		]
+	}
+}
