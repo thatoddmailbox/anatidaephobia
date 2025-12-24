@@ -2,7 +2,10 @@ package dev.studer.alex.anatidaephobia.world.level.portal;
 
 import com.mojang.serialization.MapCodec;
 import dev.studer.alex.anatidaephobia.AnatidaephobiaBlocks;
+import dev.studer.alex.anatidaephobia.AnatidaephobiaItems;
 import dev.studer.alex.anatidaephobia.network.AnatidaephobiaNetwork;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -12,6 +15,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -88,18 +92,36 @@ public class DuckyPortalBlock extends Block implements Portal {
             if (entity instanceof ServerPlayer player) {
                 // Only trigger once when first entering (cooldown prevents spam)
                 if (!player.isOnPortalCooldown()) {
-                    // Send the win screen packet to the player
-                    player.unRide();
-                    player.level().removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
-                    // reuse the flag used for the End. this is a good idea that we will definitely not regret later
-                    player.wonGame = true;
-                    AnatidaephobiaNetwork.sendDuckyWin(player);
-
-                    player.setPortalCooldown();
+                    // Check if the player is wearing full Quackmium armor
+                    if (isWearingFullQuackmiumArmor(player)) {
+                        // Send the win screen packet to the player
+                        player.unRide();
+                        player.level().removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
+                        // reuse the flag used for the End. this is a good idea that we will definitely not regret later
+                        player.wonGame = true;
+                        AnatidaephobiaNetwork.sendDuckyWin(player);
+                        player.setPortalCooldown();
+                    } else {
+                        // Admonish the player for not wearing full Quackmium armor
+                        player.displayClientMessage(
+                                Component.translatable("message.anatidaephobia.portal_no_armor")
+                                        .withStyle(ChatFormatting.GOLD),
+                                false
+                        );
+                        // Longer cooldown to prevent message spam while standing in portal
+                        player.setPortalCooldown(100);
+                    }
                 }
             }
             // When dimension is implemented, use: entity.setAsInsidePortal(this, pos);
         }
+    }
+
+    private boolean isWearingFullQuackmiumArmor(Player player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(AnatidaephobiaItems.QUACKMIUM_HELMET)
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(AnatidaephobiaItems.QUACKMIUM_CHESTPLATE)
+                && player.getItemBySlot(EquipmentSlot.LEGS).is(AnatidaephobiaItems.QUACKMIUM_LEGGINGS)
+                && player.getItemBySlot(EquipmentSlot.FEET).is(AnatidaephobiaItems.QUACKMIUM_BOOTS);
     }
 
     @Override
