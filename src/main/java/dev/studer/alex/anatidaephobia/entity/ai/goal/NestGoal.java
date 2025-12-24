@@ -74,6 +74,12 @@ public class NestGoal extends Goal {
 	}
 
 	@Override
+	public boolean isInterruptable() {
+		// Only allow interruption when not actively nesting, and when not leaving (to ensure the duck clears the area first)
+		return state != State.NESTING && state != State.SETTLING && state != State.LEAVING;
+	}
+
+	@Override
 	public boolean canUse() {
 		// Cooldown between nesting attempts
 		if (cooldownTicks > 0) {
