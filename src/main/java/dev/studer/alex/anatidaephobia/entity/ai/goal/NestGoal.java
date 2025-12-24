@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 public class NestGoal extends Goal {
-	private enum State {
+	public enum State {
 		SEARCHING,
 		MOVING,
 		SETTLING,
@@ -67,6 +67,10 @@ public class NestGoal extends Goal {
 
 	public boolean isRunning() {
 		return this.isRunning;
+	}
+
+	public State getState() {
+		return this.state;
 	}
 
 	@Override

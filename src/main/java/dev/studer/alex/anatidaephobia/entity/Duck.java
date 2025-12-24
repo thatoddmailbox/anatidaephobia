@@ -372,7 +372,7 @@ public class Duck extends PathfinderMob {
 				hungerAccum += 0.02f * getDeltaMovement().length();
 			}
 
-			if (getDuckStateEnum() == DuckState.NESTING) {
+			if (this.nestGoal != null && this.nestGoal.isRunning() && this.nestGoal.getState() == NestGoal.State.NESTING) {
 				hungerAccum += 0.10f;
 			}
 
