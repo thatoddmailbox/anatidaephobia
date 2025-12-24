@@ -332,7 +332,8 @@ public class Duck extends PathfinderMob {
 		panicGoal = new PanicGoal(this, 1.4);
 		this.goalSelector.addGoal(1, panicGoal);
 
-		temptGoal = new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD), false);
+		// ducks eat beetroot + beetroot seeds but don't like them a lot so aren't tempted by it
+		temptGoal = new TemptGoal(this, 1.0, itemStack -> itemStack.is(AnatidaephobiaItems.DUCK_FOOD) && !itemStack.is(Items.BEETROOT) && !itemStack.is(Items.BEETROOT_SEEDS), false);
 		this.goalSelector.addGoal(2, temptGoal);
 
 		hungryGoal = new HungryGoal(this);
