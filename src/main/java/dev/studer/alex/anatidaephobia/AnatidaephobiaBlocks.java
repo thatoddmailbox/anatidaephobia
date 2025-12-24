@@ -13,12 +13,23 @@ import dev.studer.alex.anatidaephobia.world.level.portal.DuckyPortalBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
 import java.util.function.Function;
 
 public class AnatidaephobiaBlocks {
+	public static final Block NEST_LINING = register(
+			"nest_lining",
+			Block::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_YELLOW)
+					.instrument(NoteBlockInstrument.BANJO)
+					.strength(0.5F)
+					.sound(SoundType.GRASS)
+	);
+
 	public static final Block QUACKMIUM_BLOCK = register(
 			"quackmium_block",
 			Block::new,
@@ -76,7 +87,9 @@ public class AnatidaephobiaBlocks {
 	}
 
 	public static void init() {
-		// Add quackmium block to Building Blocks creative tab
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.NATURAL_BLOCKS)
+				.register((itemGroup) -> itemGroup.accept(NEST_LINING));
+
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS)
 				.register((itemGroup) -> itemGroup.accept(QUACKMIUM_BLOCK));
 	}

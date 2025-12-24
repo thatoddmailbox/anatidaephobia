@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "anatidaephobia:block/nest_lining_top",
+    "side": "anatidaephobia:block/nest_lining_side"
+  }
+}

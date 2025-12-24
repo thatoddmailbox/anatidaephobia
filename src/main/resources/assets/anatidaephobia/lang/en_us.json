@@ -1,10 +1,12 @@
 {
+	"block.anatidaephobia.nest_lining": "Nest Lining",
 	"block.anatidaephobia.quackmium_block": "Block of Quackmium",
 	"block.anatidaephobia.ducky_portal": "Ducky Portal",
 	"effect.anatidaephobia.bread_sickness": "Bread Sickness",
 	"gui.anatidaephobia.duck": "Duck",
 	"item.anatidaephobia.duck_egg": "Duck Egg",
 	"item.anatidaephobia.duck_spawn_egg": "Duck Spawn Egg",
+	"item.anatidaephobia.nest_lining": "Nest Lining",
 	"item.anatidaephobia.raw_quackmium": "Raw Quackmium",
 	"item.anatidaephobia.quackmium_ingot": "Quackmium Ingot",
 	"item.anatidaephobia.quackmium_helmet": "Quackmium Helmet",
