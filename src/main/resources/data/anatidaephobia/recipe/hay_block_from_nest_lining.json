@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "anatidaephobia:nest_lining"
+  ],
+  "result": {
+    "count": 4,
+    "id": "minecraft:hay_block"
+  }
+}
