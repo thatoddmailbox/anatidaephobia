@@ -263,7 +263,12 @@ public class Duck extends PathfinderMob {
 	}
 
 	public boolean isAvailableForSocializing() {
-		return getDuckStateEnum() == DuckState.DEFAULT;
+		if (this.nestGoal.isRunning()) {
+			return false;
+		}
+
+		DuckState state = getDuckStateEnum();
+		return state == DuckState.DEFAULT || state == DuckState.LONELY;
 	}
 
 	public DuckState getDuckStateEnum() {

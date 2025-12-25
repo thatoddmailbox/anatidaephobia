@@ -134,13 +134,24 @@ public class SocializeGoal extends Goal {
 			return false;
 		}
 
+		// Partner must still be paired with us (handles case where partner's goal was interrupted)
+		if (partner.getSocializePartner() != duck) {
+			return false;
+		}
+
+		// Partner must still be socializing
+		// (this should be true if the above check passed, but just to make sure)
+		if (partner.getDuckStateEnum() != Duck.DuckState.SOCIALIZING) {
+			return false;
+		}
+
 		// Don't continue if too far apart
 		if (duck.distanceToSqr(partner) > MAX_CONTINUE_DISTANCE * MAX_CONTINUE_DISTANCE) {
 			return false;
 		}
 
-		// Continue as long as at least one duck still has loneliness
-		return duck.getDuckLoneliness() > 0 || partner.getDuckLoneliness() > 0;
+		// Continue only while both ducks still have loneliness
+		return duck.getDuckLoneliness() > 0 && partner.getDuckLoneliness() > 0;
 	}
 
 	@Override
