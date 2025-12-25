@@ -25,6 +25,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -556,6 +557,8 @@ public class Duck extends PathfinderMob {
 					if (!reduceDuckStress(1)) {
 						return InteractionResult.FAIL;
 					}
+
+					this.playSound(SoundEvents.BRUSH_GENERIC);
 
 					itemStack.hurtAndBreak(16, player, hand.asEquipmentSlot());
 				} else if (itemStack.is(Items.SHEARS)) {
