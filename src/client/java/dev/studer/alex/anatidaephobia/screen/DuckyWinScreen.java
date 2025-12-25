@@ -69,7 +69,7 @@ public class DuckyWinScreen extends Screen {
     public void tick() {
         this.minecraft.getMusicManager().tick();
         this.minecraft.getSoundManager().tick(false);
-        float maxScroll = (float) (this.totalScrollLength + this.height + 50);
+        float maxScroll = (float) (this.totalScrollLength + this.height + 30);
         if (this.scroll > maxScroll) {
             this.respawn();
         }

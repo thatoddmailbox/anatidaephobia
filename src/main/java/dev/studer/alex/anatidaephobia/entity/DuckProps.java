@@ -13,7 +13,9 @@ public final class DuckProps {
 
 	// Duck names for random generation
 	private static final String[] DUCK_NAMES = {
-		"Quackers", "Waddles", "Donald", "Daffy", "Howard", "Mallard", "Puddles"
+		"Quackers", "Waddles", "Gerald", "Howard", "Mallard", "Puddles",
+		"Bill", "Drake", "Webby", "Alistair", "Barnaby", "Mortimer",
+		"Finley", "Winston", "Bob"
 	};
 
 	public static String generateDuckName(int hashCode) {
