@@ -4,7 +4,9 @@ import com.mojang.logging.LogUtils;
 import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -33,6 +35,13 @@ public class DuckNestManager {
 				if (!level.getBlockState(checkPos.above()).isAir()) {
 					return false;
 				}
+
+				if (dx != 0 && dz != 0) {
+					// The border blocks cannot be nest center materials (otherwise you could have overlapping nests!)
+					if (level.getBlockState(checkPos).is(AnatidaephobiaBlocks.NEST_CENTER)) {
+						return false;
+					}
+				}
 			}
 		}
 
@@ -40,12 +49,55 @@ public class DuckNestManager {
 	}
 
 	public static int getNestQualityLevel(LevelReader level, BlockPos pos) {
-		// TODO: fully implement
-		if (level.getBlockState(pos).is(AnatidaephobiaBlocks.NEST_LINING)) {
-			return 2;
+		//
+		// Nest quality levels:
+		// * NQ1: Hay block with any solid blocks as ring
+		// * NQ2: Nest lining with any solid blocks as ring
+		// * NQ3: Nest lining with mud bricks as ring
+		// * NQ4: Nest lining with wool as ring
+		// * NQ5: Nest lining with quackmium blocks as ring
+		//
+
+		BlockState centerState = level.getBlockState(pos);
+
+		// NQ1: Hay block center (lowest quality)
+		if (!centerState.is(AnatidaephobiaBlocks.NEST_LINING)) {
+			return 1;
 		}
 
-		return 1;
+		// Center is nest lining - check the ring to determine quality (NQ2-5)
+		boolean allQuackmium = true;
+		boolean allWool = true;
+		boolean allMudBricks = true;
+
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				if (dx == 0 && dz == 0) {
+					continue; // Skip center block
+				}
+				BlockState ringState = level.getBlockState(pos.offset(dx, 0, dz));
+				if (!ringState.is(AnatidaephobiaBlocks.QUACKMIUM_BLOCK)) {
+					allQuackmium = false;
+				}
+				if (!ringState.is(BlockTags.WOOL)) {
+					allWool = false;
+				}
+				if (!ringState.is(Blocks.MUD_BRICKS)) {
+					allMudBricks = false;
+				}
+			}
+		}
+
+		if (allQuackmium) {
+			return 5;
+		}
+		if (allWool) {
+			return 4;
+		}
+		if (allMudBricks) {
+			return 3;
+		}
+		return 2;
 	}
 
 	public static boolean isNestFree(BlockPos p, UUID self) {
