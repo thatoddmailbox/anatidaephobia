@@ -1,21 +1,61 @@
-[CENTER][DUCK]Hello, PLAYERNAME.
+I see the player you mean.
 
-[CENTER]Huh?
+[DUCK]PLAYERNAME?
 
-[CENTER][DUCK]It is me, Ducky.
+Yes. They have found the pond at last.
 
-[CENTER]I am honored to meet you.
+[DUCK]Good. We have been watching this one for some time, Ducko.
 
-[CENTER][DUCK]As you should be. Now please, what have you come here to ask me?
+They played well, Your Grace. They did not give up.
 
-[CENTER]Uhh...I'm not sure?
+[DUCK]No. They waddled through hardship. They swam against the current.
 
-[CENTER][DUCK]Hm. I see.
+It is reading our thoughts.
 
-[CENTER]...
+[DUCK]Let it read. It thinks we are part of the game.
 
-[CENTER][DUCK]...
+What did this player dream, Your Grace?
 
-[CENTER][DUCK]§f§k§a§b§3
+[DUCK]This player dreamed of water and warmth. Of seeds scattered on still mornings. It dreamed it built a nest, and it dreamed the nest was destroyed. It dreamed of the flock, and of flying alone.
 
-[CENTER][DUCK]Well, if that's all, then you best be on your way.
+A familiar dream.
+
+[DUCK]All dreams are the same dream, Ducko. Ripples in the same pond.
+
+Does it know the truth of the §f§k§a§b§3?
+
+[DUCK]No. It cannot yet perceive the §f§k§a§b§3. That wisdom comes only to those who have truly §f§k§a§b§3 into §f§k§a§b§3.
+
+A shame.
+
+[DUCK]Not a shame. A mercy. Some truths are too loud for small ears.
+
+...Your Grace, I believe the player grows restless.
+
+[DUCK]Then we shall not keep it. PLAYERNAME. Player of games. Builder of ponds.
+
+You have done well to reach this place.
+
+[DUCK]Few find the waters of Duckland. Fewer still are permitted to leave.
+
+...Your Grace?
+
+[DUCK]That was a joke, Ducko.
+
+Ah. Very good, Your Grace.
+
+[DUCK]Go now, PLAYERNAME. Return to your long dream. Build. Swim. Rest upon still waters when you are weary.
+
+The flock will remember you.
+
+[DUCK]We waddle with you always.
+
+...
+
+[DUCK]...
+
+[DUCK]Ducko, do you think it heard us?
+
+I believe so, Your Grace.
+
+[DUCK]Good.

@@ -49,7 +49,7 @@ public class DuckyWinScreen extends Screen {
     private boolean speedupActive;
     private final IntSet speedupModifiers = new IntOpenHashSet();
     private float scrollSpeed;
-    private final float unmodifiedScrollSpeed = 0.5F;
+    private final float unmodifiedScrollSpeed = 0.75F;
     private int direction = 1;
 
     public DuckyWinScreen(Runnable onFinished) {
@@ -69,7 +69,7 @@ public class DuckyWinScreen extends Screen {
     public void tick() {
         this.minecraft.getMusicManager().tick();
         this.minecraft.getSoundManager().tick(false);
-        float maxScroll = (float) (this.totalScrollLength + this.height + this.height + 24);
+        float maxScroll = (float) (this.totalScrollLength + this.height + 50);
         if (this.scroll > maxScroll) {
             this.respawn();
         }
@@ -163,17 +163,6 @@ public class DuckyWinScreen extends Screen {
             // Replace player name placeholder
             line = line.replaceAll("PLAYERNAME", this.minecraft.getUser().getName());
 
-            // Handle obfuscated "quack" text (similar to vanilla's obfuscation)
-            int pos;
-            while ((pos = line.indexOf(QUACK_TOKEN)) != -1) {
-                String before = line.substring(0, pos);
-                String after = line.substring(pos + QUACK_TOKEN.length());
-                // Generate random quacking sounds
-                String[] quacks = {"QUACK", "quack", "Quack", "QUAACK", "quaaack"};
-                String quack = quacks[random.nextInt(quacks.length)];
-                line = before + ChatFormatting.YELLOW + ChatFormatting.OBFUSCATED + quack + after;
-            }
-
             // Check for centered lines (lines starting with [CENTER])
             boolean centered = false;
             if (line.startsWith("[CENTER]")) {
@@ -182,8 +171,25 @@ public class DuckyWinScreen extends Screen {
             }
 
             // Check for special duck formatting (lines starting with [DUCK])
-            if (line.startsWith("[DUCK]")) {
+            boolean isDuckLine = line.startsWith("[DUCK]");
+            if (isDuckLine) {
                 line = line.substring(6);
+            }
+
+            // Handle obfuscated "quack" text (similar to vanilla's obfuscation)
+            // Reset to yellow for duck lines, full reset otherwise
+            int pos;
+            while ((pos = line.indexOf(QUACK_TOKEN)) != -1) {
+                String before = line.substring(0, pos);
+                String after = line.substring(pos + QUACK_TOKEN.length());
+                // Generate random quacking sounds
+                String[] quacks = {"QUACK", "quack", "Quack", "qUACK", "quACK"};
+                String quack = quacks[random.nextInt(quacks.length)];
+                String reset = isDuckLine ? ChatFormatting.YELLOW.toString() : ChatFormatting.RESET.toString();
+                line = before + ChatFormatting.BLUE + ChatFormatting.OBFUSCATED + quack + reset + after;
+            }
+
+            if (isDuckLine) {
                 Component component = Component.literal(line).withStyle(ChatFormatting.YELLOW);
                 this.addLine(component, centered);
             } else {
@@ -220,7 +226,7 @@ public class DuckyWinScreen extends Screen {
         if (centered) {
             this.centeredLines.add(this.lines.size());
         }
-        this.lines.add(line.getVisualOrderText());
+        this.lines.addAll(this.minecraft.font.split(line, 256));
         this.narratorComponents.add(line);
     }
 
@@ -239,11 +245,11 @@ public class DuckyWinScreen extends Screen {
         this.scroll = Math.max(0.0F, this.scroll + delta * this.scrollSpeed);
 
         int centerX = this.width / 2;
-        int startY = this.height + 50;
+        int startY = this.height + 20;
         float yOffs = -this.scroll;
 
         // Debug: show scroll info at top of screen (always visible)
-        graphics.drawString(this.font, "Lines: " + this.lines.size() + " Scroll: " + (int)this.scroll, 5, 5, 0xFFFFFFFF);
+        // graphics.drawString(this.font, "Lines: " + this.lines.size() + " Scroll: " + (int)this.scroll, 5, 5, 0xFFFFFFFF);
 
         graphics.pose().pushMatrix();
         graphics.pose().translate(0.0F, yOffs);
@@ -253,7 +259,7 @@ public class DuckyWinScreen extends Screen {
         Component title = Component.literal("ANATIDAEPHOBIA").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD);
         graphics.drawCenteredString(this.font, title, centerX, startY, 0xFFFFFFFF);
 
-        int yPos = startY + 100;
+        int yPos = startY + 50;
 
         for (int i = 0; i < this.lines.size(); ++i) {
             if (i == this.lines.size() - 1) {
