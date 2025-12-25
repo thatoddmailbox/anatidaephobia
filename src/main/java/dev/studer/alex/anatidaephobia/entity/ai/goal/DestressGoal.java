@@ -16,7 +16,7 @@ import java.util.Queue;
 import java.util.Set;
 
 public class DestressGoal extends Goal {
-	private static final int STRESS_THRESHOLD = 3;
+	private static final int STRESS_THRESHOLD = 5;
 	private static final int MAX_STRESS = 10;
 	private static final int SEARCH_RANGE = 16;
 	private static final int MIN_WATER_AREA = 16;

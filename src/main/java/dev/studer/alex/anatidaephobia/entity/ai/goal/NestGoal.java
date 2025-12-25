@@ -362,8 +362,8 @@ public class NestGoal extends Goal {
 
 			// Update duck stats
 			duck.addDuckXP(1);
-			duck.addDuckStress(Mth.ceil(duck.getDuckLevel() / 2.0f));
-			duck.addDuckLoneliness(1);
+			duck.addDuckStress(Mth.ceil((6 - duck.getDuckLevel()) / 3.0f));
+			duck.addDuckLoneliness(Mth.ceil(duck.getDuckLevel() / 2.0f));
 
 			// Unclaim the nest now so other ducks can use it
 			DuckNestManager.unclaimNest(duck);

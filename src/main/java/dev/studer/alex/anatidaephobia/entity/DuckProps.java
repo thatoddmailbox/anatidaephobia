@@ -22,7 +22,7 @@ public final class DuckProps {
 	}
 
 	// XP thresholds for each level (total XP required to reach that level)
-	private static final int[] LEVEL_XP_THRESHOLDS = {0, 10, 30, 70, 170};
+	private static final int[] LEVEL_XP_THRESHOLDS = {0, 10, 25, 55, 115};
 
 	public static int getMaxLevel() {
 		return LEVEL_XP_THRESHOLDS.length;
@@ -79,14 +79,14 @@ public final class DuckProps {
 		// TODO: these are placeholders, need to make some more items
 		return switch (level) {
 			case 1 -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
-			case 2 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
+			case 2 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
 					: new ItemStack(Items.FEATHER);
 			case 3 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
-					: new ItemStack(Items.BOOK);
+					: new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM);
 			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
 					: new ItemStack(AnatidaephobiaItems.DUCK_EGG);
 			case 5 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
-					: new ItemStack(AnatidaephobiaItems.DUCK_EGG);
+					: new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM, 2);
 			default -> new ItemStack(AnatidaephobiaItems.DUCK_EGG);
 		};
 	}
