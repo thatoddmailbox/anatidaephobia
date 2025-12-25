@@ -38,7 +38,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 	public DuckScreen(DuckMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
 		this.imageWidth = 176;
-		this.imageHeight = 222;
+		this.imageHeight = 152;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 
 		// can't use graphics.drawCenteredString because it forces drop shadow
 		Component title = getTitle();
-		graphics.drawString(this.font, title, (this.imageWidth - font.width(title)) / 2, this.titleLabelY, 0xff404040, false);
+		graphics.drawString(this.font, title, (this.imageWidth - font.width(title)) / 2, this.titleLabelY + 2, 0xff404040, false);
 	}
 
 	protected void drawBar(final GuiGraphics graphics, int x, int y, int value, int max, boolean isShort, BarStyle bar) {
@@ -137,15 +137,15 @@ public class DuckScreen extends AbstractContainerScreen<DuckMenu> {
 		int duckLoneliness = duck.getDuckLoneliness();
 
 		String duckLevelString = "Level " + duckLevel + (duckLevel >= DuckProps.getMaxLevel() ? " (max level!)" : "");
-		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 18, 0xff404040, false);
+		graphics.drawString(this.font, duckLevelString, (this.width - font.width(duckLevelString)) / 2, yo + 22, 0xff404040, false);
 
 		int xpBarX = xo + ((this.imageWidth - BAR_SHORT_WIDTH) / 2);
-		int xpBarY = yo + 30;
+		int xpBarY = yo + 36;
 		drawBar(graphics, xpBarX, xpBarY, levelCurrentXP, levelMaxXP, true, BarStyle.GOOD);
 
-		drawStat(graphics, xo + LEFT_MARGIN, yo + 50, "Hunger", duckHunger);
-		drawStat(graphics, xo + LEFT_MARGIN, yo + 50 + 32, "Stress", duckStress);
-		drawStat(graphics, xo + LEFT_MARGIN, yo + 50 + 32 + 32, "Loneliness", duckLoneliness);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 61, "Hunger", duckHunger);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 61 + 32, "Stress", duckStress);
+		drawStat(graphics, xo + LEFT_MARGIN, yo + 61 + 32 + 32, "Loneliness", duckLoneliness);
 	}
 
 	@Override
