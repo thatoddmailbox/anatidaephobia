@@ -35,19 +35,19 @@ public class AnatidaephobiaItems {
 	public static final TagKey<Item> REPAIRS_QUACKMIUM_ARMOR = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "repairs_quackmium_armor"));
 	public static final ResourceKey<EquipmentAsset> QUACKMIUM_EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Anatidaephobia.MOD_ID, "quackmium"));
 
-	// Iron armor stats: durability=15, defense=(boots=2, legs=5, chest=6, helm=2, body=5), enchantValue=9, toughness=0, knockback=0
+	// Between iron and diamond: durability=24, defense=(boots=2, legs=6, chest=7, helm=3, body=6), enchantValue=10, toughness=1.0, knockback=0
 	public static final ArmorMaterial QUACKMIUM_ARMOR_MATERIAL = new ArmorMaterial(
-			15, // durability multiplier (same as iron)
+			24, // durability multiplier (between iron 15 and diamond 33)
 			Maps.newEnumMap(Map.of(
 					ArmorType.BOOTS, 2,
-					ArmorType.LEGGINGS, 5,
-					ArmorType.CHESTPLATE, 6,
-					ArmorType.HELMET, 2,
-					ArmorType.BODY, 5
+					ArmorType.LEGGINGS, 6,
+					ArmorType.CHESTPLATE, 7,
+					ArmorType.HELMET, 3,
+					ArmorType.BODY, 6
 			)),
-			9, // enchantment value (same as iron)
+			10, // enchantment value (between iron 9 and diamond 10)
 			SoundEvents.ARMOR_EQUIP_IRON, // equip sound
-			0.0F, // toughness (same as iron)
+			1.0F, // toughness (between iron 0 and diamond 2.0)
 			0.0F, // knockback resistance (same as iron)
 			REPAIRS_QUACKMIUM_ARMOR,
 			QUACKMIUM_EQUIPMENT_ASSET
