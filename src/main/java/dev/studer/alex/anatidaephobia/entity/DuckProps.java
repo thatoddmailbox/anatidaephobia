@@ -61,13 +61,13 @@ public final class DuckProps {
 		} else if (itemStack.is(Items.KELP) || itemStack.is(Items.DRIED_KELP)) {
 			return 2;
 		} else if (itemStack.is(Items.BEETROOT)) {
-			return 2; // TODO: but they don't like it so much
+			return 2; // but they don't like it so much (aren't tempted by it)
 		} else if (itemStack.is(Items.SWEET_BERRIES)) {
 			return 3;
 		} else if (itemStack.is(Items.MELON_SLICE)) {
 			return 4;
 		} else if (itemStack.is(Items.GLISTERING_MELON_SLICE)) {
-			return 6;
+			return 7;
 		}
 
 		return 1; // default for any other duck food
@@ -83,7 +83,7 @@ public final class DuckProps {
 					: new ItemStack(Items.FEATHER);
 			case 3 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.DUCK_EGG)
 					: new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM);
-			case 4 -> roll < 0.6f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
+			case 4 -> roll < 0.7f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
 					: new ItemStack(AnatidaephobiaItems.DUCK_EGG);
 			case 5 -> roll < 0.8f ? new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM)
 					: new ItemStack(AnatidaephobiaItems.RAW_QUACKMIUM, 2);

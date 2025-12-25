@@ -36,8 +36,8 @@ public class NestGoal extends Goal {
 	private static final double POSITION_TOLERANCE = 0.1;     // Considered "same position"
 
 	// Timing
-	private static final int NEST_DURATION = 2 * Anatidaephobia.TICKS_PER_SECOND;
-	private static final int NEST_COOLDOWN = 2 * Anatidaephobia.TICKS_PER_SECOND;
+	private static final int NEST_DURATION = 5 * Anatidaephobia.TICKS_PER_SECOND;
+	private static final int NEST_COOLDOWN = 10 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int DISAPPOINTED_DURATION = 10 * Anatidaephobia.TICKS_PER_SECOND;
 	private static final int PATH_RECALC_INTERVAL = 10;  // ticks
 	private static final int SETTLE_TIMEOUT = 3 * Anatidaephobia.TICKS_PER_SECOND;
