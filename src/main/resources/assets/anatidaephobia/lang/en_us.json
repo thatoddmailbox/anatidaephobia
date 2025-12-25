@@ -19,6 +19,9 @@
 	"message.anatidaephobia.duck_nametag": "You think you can change a duck's name just because you want to? How egotistical.",
 	"message.anatidaephobia.duck_death": "The Pond remembers.",
 	"message.anatidaephobia.portal_no_armor": "You are not worthy of this portal. Don the sacred Quackmium armor to prove your devotion.",
+	"tag.block.anatidaephobia.duck_shrine_border": "Duck Shrine Border",
+	"tag.block.anatidaephobia.nest_center": "Nest Center",
 	"tag.item.anatidaephobia.duck_food": "Duck Food",
-	"tag.item.anatidaephobia.duck_interactive": "Duck Interactive Items"
+	"tag.item.anatidaephobia.duck_interactive": "Duck Interactive Items",
+	"tag.item.anatidaephobia.repairs_quackmium_armor": "Repairs Quackmium Armor"
 }
