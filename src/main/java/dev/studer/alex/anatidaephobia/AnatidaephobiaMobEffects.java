@@ -8,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 
@@ -25,7 +26,7 @@ public class AnatidaephobiaMobEffects {
 
     public static final Holder<MobEffect> WRATH_OF_THE_DUCK_GODS = register(
             "wrath_of_the_duck_gods",
-            new WrathOfTheDuckGodsMobEffect(MobEffectCategory.HARMFUL, WRATH_COLOR)
+            new WrathOfTheDuckGodsMobEffect(MobEffectCategory.HARMFUL, WRATH_COLOR).withSoundOnAdded(SoundEvents.WARDEN_ROAR)
     );
 
     private static Holder<MobEffect> register(String name, MobEffect effect) {

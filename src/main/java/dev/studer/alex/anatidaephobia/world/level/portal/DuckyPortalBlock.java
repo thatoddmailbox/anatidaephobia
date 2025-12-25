@@ -147,19 +147,19 @@ public class DuckyPortalBlock extends Block implements Portal {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        // Play quacking sound occasionally
-        if (random.nextInt(100) == 0) {
-            level.playLocalSound(
-                    pos.getX() + 0.5,
-                    pos.getY() + 0.5,
-                    pos.getZ() + 0.5,
-                    SoundEvents.CHICKEN_AMBIENT, // TODO: Replace with custom duck sound
-                    SoundSource.BLOCKS,
-                    0.5F,
-                    random.nextFloat() * 0.4F + 0.8F,
-                    false
-            );
-        }
+        // TODO: Play quacking sound occasionally
+        // if (random.nextInt(100) == 0) {
+        //     level.playLocalSound(
+        //             pos.getX() + 0.5,
+        //             pos.getY() + 0.5,
+        //             pos.getZ() + 0.5,
+        //             SoundEvents.CHICKEN_AMBIENT, // TODO: Replace with custom duck sound
+        //             SoundSource.BLOCKS,
+        //             0.5F,
+        //             random.nextFloat() * 0.4F + 0.8F,
+        //             false
+        //     );
+        // }
 
         // Spawn feather-like particles
         for (int i = 0; i < 4; ++i) {
