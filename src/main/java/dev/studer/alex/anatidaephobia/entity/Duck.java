@@ -308,9 +308,11 @@ public class Duck extends PathfinderMob {
 		} else if (this.socializeGoal != null && this.socializeGoal.isRunning()) {
 			this.entityData.set(DATA_DUCK_STATE, DuckState.SOCIALIZING.ordinal());
 		} else if (this.nestGoal != null && this.nestGoal.isRunning()) {
-			// Check if the nest goal is in disappointed state
-			if (this.nestGoal.getState() == NestGoal.State.DISAPPOINTED) {
+			NestGoal.State nestGoalState = this.nestGoal.getState();
+			if (nestGoalState == NestGoal.State.DISAPPOINTED) {
 				this.entityData.set(DATA_DUCK_STATE, DuckState.DISAPPOINTED.ordinal());
+			} else if (nestGoalState == NestGoal.State.LEAVING || nestGoalState == NestGoal.State.FINISHED) {
+				this.entityData.set(DATA_DUCK_STATE, DuckState.DEFAULT.ordinal());
 			} else {
 				this.entityData.set(DATA_DUCK_STATE, DuckState.NESTING.ordinal());
 			}
