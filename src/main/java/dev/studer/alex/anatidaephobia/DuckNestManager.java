@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import dev.studer.alex.anatidaephobia.entity.Duck;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -54,7 +53,7 @@ public class DuckNestManager {
 		// * NQ1: Hay block with any solid blocks as ring
 		// * NQ2: Nest lining with any solid blocks as ring
 		// * NQ3: Nest lining with mud bricks as ring
-		// * NQ4: Nest lining with wool as ring
+		// * NQ4: Nest lining with calcite as ring
 		// * NQ5: Nest lining with quackmium blocks as ring
 		//
 
@@ -67,7 +66,7 @@ public class DuckNestManager {
 
 		// Center is nest lining - check the ring to determine quality (NQ2-5)
 		boolean allQuackmium = true;
-		boolean allWool = true;
+		boolean allCalcite = true;
 		boolean allMudBricks = true;
 
 		for (int dx = -1; dx <= 1; dx++) {
@@ -79,8 +78,8 @@ public class DuckNestManager {
 				if (!ringState.is(AnatidaephobiaBlocks.QUACKMIUM_BLOCK)) {
 					allQuackmium = false;
 				}
-				if (!ringState.is(BlockTags.WOOL)) {
-					allWool = false;
+				if (!ringState.is(Blocks.CALCITE)) {
+					allCalcite = false;
 				}
 				if (!ringState.is(Blocks.MUD_BRICKS)) {
 					allMudBricks = false;
@@ -91,7 +90,7 @@ public class DuckNestManager {
 		if (allQuackmium) {
 			return 5;
 		}
-		if (allWool) {
+		if (allCalcite) {
 			return 4;
 		}
 		if (allMudBricks) {
