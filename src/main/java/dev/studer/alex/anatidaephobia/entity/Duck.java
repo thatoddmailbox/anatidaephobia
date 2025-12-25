@@ -13,10 +13,13 @@ import dev.studer.alex.anatidaephobia.entity.ai.goal.StressGoal;
 import dev.studer.alex.anatidaephobia.menu.DuckMenu;
 import dev.studer.alex.anatidaephobia.menu.DuckMenuData;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -625,16 +628,33 @@ public class Duck extends PathfinderMob {
 
 	@Override
 	public void die(DamageSource damageSource) {
-		if (damageSource.getEntity() instanceof ServerPlayer) {
-			ServerPlayer player = (ServerPlayer) damageSource.getEntity();
+		if (damageSource.getEntity() instanceof ServerPlayer player) {
+			// Apply the Wrath of the Duck Gods - an intense 15-second lightning storm
+			player.addEffect(new MobEffectInstance(
+					AnatidaephobiaMobEffects.WRATH_OF_THE_DUCK_GODS,
+					dev.studer.alex.anatidaephobia.effect.WrathOfTheDuckGodsMobEffect.DURATION,
+					0, // amplifier
+					false, // ambient
+					true, // visible
+					true // show icon
+			));
 
-			// TODO: lightning storm?
-			player.level().setWeatherParameters(0, 10*Anatidaephobia.TICKS_PER_SECOND, true, true);
-
-			player.sendSystemMessage(Component.translatable("message.anatidaephobia.duck_death"));
-		} else if (damageSource.getEntity() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity) damageSource.getEntity();
-			// TODO: should we do something here?
+			player.sendSystemMessage(
+				Component.translatable("message.anatidaephobia.duck_death")
+						.withStyle(Style.EMPTY
+									.withColor(ChatFormatting.RED)
+									.withBold(true))
+			);
+		} else if (damageSource.getEntity() instanceof LivingEntity livingEntity) {
+			// Non-player entities also face the wrath, but less severe
+			livingEntity.addEffect(new MobEffectInstance(
+					AnatidaephobiaMobEffects.WRATH_OF_THE_DUCK_GODS,
+					dev.studer.alex.anatidaephobia.effect.WrathOfTheDuckGodsMobEffect.DURATION / 2,
+					0,
+					false,
+					true,
+					true
+			));
 		}
 
 		super.die(damageSource);
