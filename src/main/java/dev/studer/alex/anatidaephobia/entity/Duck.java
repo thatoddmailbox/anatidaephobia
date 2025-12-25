@@ -60,6 +60,7 @@ public class Duck extends PathfinderMob {
 	private byte EVENT_ID_LOVE = 100;
 	private byte EVENT_ID_STRESS = 101;
 	private byte EVENT_ID_LONELY = 102;
+	private byte EVENT_ID_SOCIALIZE = 103;
 
 	// Duck state enum - synced to client via DATA_DUCK_STATE
 	public enum DuckState {
@@ -332,6 +333,10 @@ public class Duck extends PathfinderMob {
 		this.level().broadcastEntityEvent(this, EVENT_ID_LONELY);
 	}
 
+	public void broadcastSocializeEvent() {
+		this.level().broadcastEntityEvent(this, EVENT_ID_SOCIALIZE);
+	}
+
 	private FloatGoal floatGoal;
 	private PanicGoal panicGoal;
 	private TemptGoal temptGoal;
@@ -451,6 +456,18 @@ public class Duck extends PathfinderMob {
 		} else if (id == EVENT_ID_LONELY) {
 			// Sad smoke particles for lonely ducks
 			addParticlesAroundSelf(ParticleTypes.SMOKE);
+		} else if (id == EVENT_ID_SOCIALIZE) {
+			// Note particles for chatting ducks - fewer particles for subtlety
+			for (int i = 0; i < 2; ++i) {
+				double xa = this.random.nextGaussian() * 0.02;
+				double ya = this.random.nextDouble() * 0.1;
+				double za = this.random.nextGaussian() * 0.02;
+				this.level().addParticle(ParticleTypes.HAPPY_VILLAGER,
+					this.getX() + (this.random.nextDouble() - 0.5) * 0.5,
+					this.getY() + 0.8 + this.random.nextDouble() * 0.3,
+					this.getZ() + (this.random.nextDouble() - 0.5) * 0.5,
+					xa, ya, za);
+			}
 		} else {
 			super.handleEntityEvent(id);
 		}

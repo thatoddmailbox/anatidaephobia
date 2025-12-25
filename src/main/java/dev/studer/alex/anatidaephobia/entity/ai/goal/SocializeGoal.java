@@ -21,6 +21,7 @@ public class SocializeGoal extends Goal {
 	private static final int REDUCTION_INTERVAL = 40; // 2 seconds
 	private static final int REDUCTION_AMOUNT = 1;
 	private static final double SPEED_MODIFIER = 1.0;
+	private static final int PARTICLE_INTERVAL = 20; // 1 second between particles
 
 	private final Duck duck;
 	private boolean isRunning;
@@ -196,6 +197,11 @@ public class SocializeGoal extends Goal {
 			// Within talk distance - stop moving and "talk"
 			duck.getNavigation().stop();
 			ticksTalking++;
+
+			// Show particles periodically while chatting
+			if (ticksTalking % PARTICLE_INTERVAL == 0) {
+				duck.broadcastSocializeEvent();
+			}
 
 			// Reduce loneliness on both ducks periodically
 			// Only the duck with lower ID reduces to avoid double-reduction
