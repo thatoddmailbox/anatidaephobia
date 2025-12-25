@@ -16,7 +16,7 @@ public class AnatidaephobiaEntities {
 	public static final EntityType<Duck> DUCK = Registry.register(
 			BuiltInRegistries.ENTITY_TYPE,
 			DUCK_ID,
-			EntityType.Builder.of(Duck::new, MobCategory.CREATURE).sized(0.85f, 0.85f).build(ResourceKey.create(
+			EntityType.Builder.of(Duck::new, MobCategory.CREATURE).sized(0.85f, 1.0f).eyeHeight(0.9f).build(ResourceKey.create(
 					Registries.ENTITY_TYPE,
 					DUCK_ID
 			))
