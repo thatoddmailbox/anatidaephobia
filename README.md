@@ -5,8 +5,6 @@ Anatidaephobia is a Minecraft mod that adds ducks with complex behavior systems 
 <p float="left">
 	<img src="./screenshots/screenshot1.png" alt="Screenshot" width="49%" />
 	<img src="./screenshots/screenshot2.png" alt="Screenshot" width="49%" />
-</p>
-<p float="left">
 	<img src="./screenshots/screenshot3.png" alt="Screenshot" width="49%" />
 	<img src="./screenshots/screenshot4.png" alt="Screenshot" width="49%" />
 </p>
